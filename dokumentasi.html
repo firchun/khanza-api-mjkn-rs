@@ -1,0 +1,2867 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Web Service Antrean BPJS Mobile JKN FKTL &mdash; RSUD Merauke</title>
+  <meta name="description"
+    content="Dokumentasi Web Service Antrean BPJS Mobile JKN FKTL RSUD Merauke untuk integrasi layanan antrean fasilitas kesehatan tingkat lanjutan (FKTL).">
+
+  <meta name="keywords"
+    content="Web Service Mobile JKN, Antrean Mobile JKN, BPJS Kesehatan, API Mobile JKN, Web Service BPJS, Antrean BPJS, FKTL, RSUD Merauke, API Antrean RSUD Merauke">
+
+  <meta name="author" content="RSUD Merauke">
+
+  <meta name="robots" content="index, follow">
+
+  <meta name="language" content="Indonesian">
+
+  <!-- Canonical -->
+
+  <link rel="canonical" href="{{ url()->current() }}">
+
+  <!-- Open Graph -->
+
+  <meta property="og:type" content="website">
+
+  <meta property="og:title" content="Web Service Antrean Mobile JKN FKTL | RSUD Merauke">
+
+  <meta property="og:description"
+    content="Dokumentasi Web Service Antrean BPJS Mobile JKN FKTL RSUD Merauke untuk integrasi layanan antrean fasilitas kesehatan.">
+
+  <meta property="og:url" content="{{ url()->current() }}">
+
+  <meta property="og:site_name" content="RSUD Merauke">
+
+  <meta property="og:locale" content="id_ID">
+
+  <!-- Twitter / X -->
+
+  <meta name="twitter:card" content="summary">
+
+  <meta name="twitter:title" content="Web Service Antrean Mobile JKN FKTL | RSUD Merauke">
+
+  <meta name="twitter:description" content="Dokumentasi Web Service Antrean BPJS Mobile JKN FKTL RSUD Merauke.">
+
+  <!-- Theme -->
+
+  <meta name="theme-color" content="#0f766e">
+
+  <!-- Security / Referrer -->
+
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <style>
+    :root {
+      --sidebar-bg: #EEF1F6;
+      --sidebar-border: #DCE1EA;
+      --main-bg: #FFFFFF;
+      --ink: #1B2430;
+      --ink-soft: #6B7686;
+      --ink-faint: #98A2B3;
+      --accent-blue: #2F6FED;
+      --rail-bg: #1E2836;
+      --rail-bg-2: #243040;
+      --rail-border: #33404F;
+      --code-bg: #F4F6F9;
+      --code-border: #E4E8EF;
+      --line: #E7EAF0;
+      --get: #1AA179;
+      --post: #3B82F6;
+      --sans: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+      --mono: 'SFMono-Regular', ui-monospace, Consolas, 'Courier New', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--sans);
+      color: var(--ink);
+      background: var(--main-bg);
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    code {
+      font-family: var(--mono);
+    }
+
+    /* ===== Layout ===== */
+    .shell {
+      display: grid;
+      grid-template-columns: 272px minmax(0, 1fr) 420px;
+      min-height: 100vh;
+    }
+
+    /* ===== Sidebar ===== */
+    .sidebar {
+      background: var(--sidebar-bg);
+      border-right: 1px solid var(--sidebar-border);
+      padding: 28px 20px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .brand {
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      margin: 4px 4px 22px;
+      color: var(--ink);
+    }
+
+    .brand2 {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+      margin: 4px 4px 10px;
+      color: white;
+      padding: 5px;
+      border-radius: 5px;
+      background-color: var(--accent-blue);
+    }
+
+    .nav-overview {
+      display: block;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--ink-soft);
+      text-decoration: none;
+      margin-bottom: 10px;
+    }
+
+    .nav-overview:hover {
+      background: #E2E7F0;
+    }
+
+    .nav-group-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .09em;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+      margin: 18px 10px 8px;
+    }
+
+    .nav-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-size: 13.5px;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .nav-item:hover {
+      background: #E2E7F0;
+    }
+
+    .nav-item.active {
+      background: #DCE7FD;
+    }
+
+    .nav-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      border: 2px solid var(--accent-blue);
+      flex: none;
+    }
+
+    .nav-text {
+      flex: 1;
+    }
+
+    .nav-method {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .03em;
+    }
+
+    /* ===== Main content ===== */
+    main.content {
+      padding: 56px 64px 120px;
+      min-width: 0;
+    }
+
+    .endpoint-section {
+      display: none;
+    }
+
+    .endpoint-section.active {
+      display: block;
+    }
+
+    .section-eyebrow {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--ink-faint);
+      letter-spacing: .04em;
+    }
+
+    .section-title {
+      font-size: 44px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin: 8px 0 26px;
+      color: var(--ink);
+    }
+
+    .route-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 28px;
+    }
+
+    .method-pill {
+      color: #fff;
+      font-weight: 700;
+      font-size: 12.5px;
+      letter-spacing: .03em;
+      padding: 5px 11px;
+      border-radius: 5px;
+    }
+
+    .route-path {
+      font-size: 15px;
+      color: var(--ink);
+    }
+
+    .section-desc {
+      font-size: 16px;
+      line-height: 1.7;
+      color: #333F4C;
+      max-width: 640px;
+      margin: 0 0 40px;
+    }
+
+    .h2 {
+      font-size: 26px;
+      font-weight: 800;
+      margin: 44px 0 18px;
+      letter-spacing: -0.01em;
+    }
+
+    .h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink-soft);
+      text-transform: none;
+      margin: 0 0 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .param-list {
+      max-width: 640px;
+    }
+
+    .param-row {
+      padding: 5px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .param-row:last-child {
+      border-bottom: none;
+    }
+
+    .param-name-line {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-bottom: 4px;
+    }
+
+    .param-name {
+      font-family: var(--mono);
+      font-weight: 700;
+      font-size: 14.5px;
+      color: var(--ink);
+    }
+
+    .param-type {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      color: var(--ink-faint);
+    }
+
+    .param-desc {
+      font-size: 14px;
+      color: #4B5563;
+      line-height: 1.6;
+    }
+
+    .param-extra {
+      margin-top: 6px;
+    }
+
+    .param-extra {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      color: var(--ink-soft);
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 4px;
+      padding: 2px 8px;
+    }
+
+    .resp-badge-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .status-pill {
+      background: var(--get);
+      color: #fff;
+      font-weight: 700;
+      font-size: 12.5px;
+      padding: 4px 10px;
+      border-radius: 5px;
+    }
+
+    .status-note {
+      font-size: 13px;
+      color: var(--ink-faint);
+    }
+
+    .empty-note {
+      font-size: 14px;
+      color: var(--ink-faint);
+      font-style: italic;
+    }
+
+    /* ===== Right rail ===== */
+    .rail-outer {
+      min-width: 0;
+    }
+
+    .rail {
+      padding: 56px 36px 120px 24px;
+      display: none;
+      min-width: 0;
+    }
+
+    .rail.active {
+      display: block;
+    }
+
+    .rail-inner {
+      position: sticky;
+      top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .rail-card {
+      background: var(--rail-bg);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(20, 25, 35, 0.18);
+    }
+
+    .rail-card-head {
+      color: #E7ECF3;
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--rail-border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chevron {
+      font-size: 10px;
+      color: #8B96A5;
+      line-height: 1;
+    }
+
+    .rail-card-body {
+      padding: 14px 18px 4px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .rail-param {
+      display: grid;
+      grid-template-columns: 118px 12px 1fr;
+      align-items: start;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      padding: 9px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      min-width: 0;
+    }
+
+    .rail-param:last-child {
+      border-bottom: none;
+    }
+
+    .rail-param-name {
+      color: #EAF0F7;
+      font-weight: 600;
+      overflow-wrap: anywhere;
+      line-height: 1;
+    }
+
+    .rail-param-colon {
+      color: #5B6779;
+    }
+
+    .rail-param-type {
+      color: #8FA6C4;
+      overflow-wrap: anywhere;
+      line-height: 1;
+    }
+
+    .send-btn {
+      display: block;
+      width: calc(100% - 36px);
+      margin: 14px 18px 18px;
+      background: var(--accent-blue);
+      color: #fff;
+      border: none;
+      border-radius: 7px;
+      font-size: 13.5px;
+      font-weight: 700;
+      padding: 11px 0;
+      cursor: pointer;
+      letter-spacing: .01em;
+    }
+
+    .send-btn:hover {
+      background: #2559C9;
+    }
+
+    .code-card {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .code-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--ink-soft);
+      border-bottom: 1px solid var(--code-border);
+      font-weight: 600;
+    }
+
+    .copy-icon {
+      color: var(--ink-faint);
+      cursor: pointer;
+      font-size: 13px;
+    }
+
+    .code-card-body {
+      padding: 10px 0;
+    }
+
+    .cline {
+      display: flex;
+      align-items: flex-start;
+      padding: 2px 14px;
+      min-width: 0;
+    }
+
+    .lno {
+      color: #B7BFCC;
+      font-family: var(--mono);
+      font-size: 9px;
+      width: 18px;
+      flex: none;
+      user-select: none;
+      text-align: right;
+      margin-right: 12px;
+      padding-top: 1px;
+    }
+
+    .ltext {
+      font-family: var(--mono);
+      font-size: 10px;
+      line-height: 1.7;
+      color: #33404F;
+      white-space: pre-wrap;
+      word-break: break-all;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .json-body .jk {
+      color: #0B62CC;
+    }
+
+    .json-body .jv {
+      color: #B15C00;
+    }
+
+    .curl-body .ccmd {
+      color: #7C3AED;
+      font-weight: 700;
+    }
+
+    .curl-body .cflag {
+      color: #B15C00;
+    }
+
+    .curl-body .curl2 {
+      color: #0B62CC;
+    }
+
+    .curl-body .chdr {
+      color: #0F7A5C;
+    }
+
+    .curl-body .cmethod {
+      color: #0B62CC;
+    }
+
+    @media(max-width:1180px) {
+      .shell {
+        grid-template-columns: 240px minmax(0, 1fr) 360px;
+      }
+
+      main.content {
+        padding: 40px 32px 100px;
+      }
+    }
+
+    @media(max-width:920px) {
+      .shell {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: relative;
+        height: auto;
+      }
+
+      .rail {
+        padding: 0 24px 60px;
+      }
+
+      .rail-card {
+        position: relative;
+        top: 0;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="shell">
+    <nav class="sidebar">
+      <div class="brand">Dokumentasi API <br>MJKN - RSUD Merauke</div>
+      <div class="brand2">
+        PIT
+        RSUD MERAUKE</div>
+      <a class="nav-overview" href="#overview" data-target="overview">Overview</a>
+      <div class="nav-group-label">Endpoints</div>
+      <ul class="nav-list">
+        <li><a href="#ep01" class="nav-item" data-target="ep01">
+            <span class="nav-dot"></span><span class="nav-text">Mengambil Token</span>
+            <span class="nav-method" style="color:#1AA179">GET</span>
+          </a></li>
+        <li><a href="#ep02" class="nav-item" data-target="ep02">
+            <span class="nav-dot"></span><span class="nav-text">Status Antrean Poli</span>
+            <span class="nav-method" style="color:#3B82F6">POST</span>
+          </a></li>
+        <li><a href="#ep03" class="nav-item" data-target="ep03">
+            <span class="nav-dot"></span><span class="nav-text">Ambil Antrean Poli</span>
+            <span class="nav-method" style="color:#3B82F6">POST</span>
+          </a></li>
+        <li><a href="#ep04" class="nav-item" data-target="ep04">
+            <span class="nav-dot"></span><span class="nav-text">Check-in Poli</span>
+            <span class="nav-method" style="color:#3B82F6">POST</span>
+          </a></li>
+        <li><a href="#ep05" class="nav-item" data-target="ep05">
+            <span class="nav-dot"></span><span class="nav-text">Batalkan Antrean</span>
+            <span class="nav-method" style="color:#3B82F6">POST</span>
+          </a></li>
+        <li><a href="#ep06" class="nav-item" data-target="ep06">
+            <span class="nav-dot"></span><span class="nav-text">Sisa Antrean Poli</span>
+            <span class="nav-method" style="color:#3B82F6">POST</span>
+          </a></li>
+        <li><a href="#ep07" class="nav-item" data-target="ep07">
+            <span class="nav-dot"></span><span class="nav-text">Jadwal Operasi RS</span>
+            <span class="nav-method" style="color:#3B82F6">POST</span>
+          </a></li>
+        <li><a href="#ep08" class="nav-item" data-target="ep08">
+            <span class="nav-dot"></span><span class="nav-text">Jadwal Operasi Pasien</span>
+            <span class="nav-method" style="color:#3B82F6">POST</span>
+          </a></li>
+        <li><a href="#ep09" class="nav-item" data-target="ep09">
+            <span class="nav-dot"></span><span class="nav-text">Pasien Baru</span>
+            <span class="nav-method" style="color:#3B82F6">POST</span>
+          </a></li>
+        <li><a href="#ep10" class="nav-item" data-target="ep10">
+            <span class="nav-dot"></span><span class="nav-text">Ambil Antrean Farmasi</span>
+            <span class="nav-method" style="color:#3B82F6">POST</span>
+          </a></li>
+        <li><a href="#ep11" class="nav-item" data-target="ep11">
+            <span class="nav-dot"></span><span class="nav-text">Status Antrean Farmasi</span>
+            <span class="nav-method" style="color:#3B82F6">POST</span>
+          </a></li>
+      </ul>
+    </nav>
+
+    <main class="content">
+      <section class="endpoint-section" id="overview">
+        <div class="section-head">
+          <span class="section-eyebrow">Overview</span>
+          <h1 class="section-title">Web Service Antrean BPJS Mobile JKN FKTL</h1>
+        </div>
+        <p class="section-desc">Dokumentasi resmi Web Service Antrean BPJS Mobile JKN FKTL untuk RSUD Merauke, tahun
+          2026. Gunakan endpoint <b>Mengambil Token</b> terlebih dahulu untuk memperoleh <code>x-token</code>, lalu
+          sertakan token tersebut pada header setiap permintaan berikutnya bersama <code>x-username</code>.</p>
+        <div class="route-box">
+          <span class="method-pill" style="background:#3B82F6">BASE</span>
+          <code class="route-path">https://mjkn.rsud-merauke.id</code>
+        </div>
+        <h2 class="h2">Format Respons</h2>
+        <p class="section-desc">Setiap respons sukses memuat objek <code>metadata</code> dengan <code>code: 200</code>
+          dan <code>message: "Ok"</code>. Pilih salah satu endpoint pada panel kiri untuk melihat detail permintaan dan
+          contoh respons.</p>
+      </section>
+
+      <section class="endpoint-section" id="ep01" data-num="01">
+        <div class="section-head">
+          <span class="section-eyebrow">Endpoint 01 / 11</span>
+          <h1 class="section-title">Mengambil Token</h1>
+        </div>
+
+        <div class="route-box">
+          <span class="method-pill" style="background:#1AA179">GET</span>
+          <code class="route-path">/auth</code>
+        </div>
+
+        <p class="section-desc">Mengambil token autentikasi yang digunakan pada seluruh endpoint lain. Sertakan token
+          ini pada header x-token di setiap permintaan berikutnya.</p>
+
+        <h2 class="h2">Request</h2>
+        <h3 class="h3">Header Parameters</h3>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-username</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">User yang diberikan pihak rumah sakit.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-password</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Password yang diberikan pihak rumah sakit.</div>
+
+          </div>
+        </div>
+
+        <h2 class="h2">Responses</h2>
+        <div class="resp-badge-row">
+          <span class="status-pill">200</span><span class="status-note">default</span>
+        </div>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">token</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Token autentikasi, berlaku untuk sesi berjalan.</div>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="endpoint-section" id="ep02" data-num="02">
+        <div class="section-head">
+          <span class="section-eyebrow">Endpoint 02 / 11</span>
+          <h1 class="section-title">Status Antrean Poli</h1>
+        </div>
+
+        <div class="route-box">
+          <span class="method-pill" style="background:#3B82F6">POST</span>
+          <code class="route-path">/statusantrean</code>
+        </div>
+
+        <p class="section-desc">Menampilkan status antrean pada suatu poli, termasuk sisa antrean dan sisa kuota
+          JKN/non-JKN saat ini.</p>
+
+        <h2 class="h2">Request</h2>
+        <h3 class="h3">Body Parameters</h3>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-token</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Token dari endpoint Mengambil Token.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-username</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">User yang diberikan pihak rumah sakit.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">kodepoli</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Kode poli tujuan.</div>
+            <div class="param-extra">example: 001</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">kodedokter</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Kode dokter praktik.</div>
+            <div class="param-extra">example: 00123</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">tanggalperiksa</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Tanggal periksa.</div>
+            <div class="param-extra">format: YYYY-MM-DD</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">jampraktek</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Jam praktik dokter.</div>
+            <div class="param-extra">format: HH:MM-HH:MM</div>
+          </div>
+        </div>
+
+        <h2 class="h2">Responses</h2>
+        <div class="resp-badge-row">
+          <span class="status-pill">200</span><span class="status-note">default</span>
+        </div>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">namapoli</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Nama poli.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">namadokter</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Nama dokter.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">totalantrean</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Total antrean hari ini.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">sisaantrean</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Sisa antrean yang belum dilayani.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">antreanpanggil</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Nomor antrean yang sedang dipanggil.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">sisakuotajkn</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Sisa kuota peserta JKN.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">kuotajkn</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Kuota total peserta JKN.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">sisakuotanonjkn</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Sisa kuota non-JKN.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">kuotanonjkn</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Kuota total non-JKN.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">keterangan</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Keterangan tambahan.</div>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="endpoint-section" id="ep03" data-num="03">
+        <div class="section-head">
+          <span class="section-eyebrow">Endpoint 03 / 11</span>
+          <h1 class="section-title">Ambil Antrean Poli</h1>
+        </div>
+
+        <div class="route-box">
+          <span class="method-pill" style="background:#3B82F6">POST</span>
+          <code class="route-path">/ambilantrean</code>
+        </div>
+
+        <p class="section-desc">Mengambil nomor antrean baru untuk pasien pada poli, dokter, dan jadwal praktik
+          tertentu.</p>
+
+        <h2 class="h2">Request</h2>
+        <h3 class="h3">Body Parameters</h3>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-token</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Token dari endpoint Mengambil Token.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-username</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">User yang diberikan pihak rumah sakit.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">nomorkartu</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Nomor kartu BPJS peserta.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">nik</span><span class="param-type">string</span></div>
+            <div class="param-desc">Nomor Induk Kependudukan peserta.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">nohp</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Nomor HP peserta.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">kodepoli</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Kode poli tujuan.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">norm</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Nomor rekam medis pasien.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">tanggalperiksa</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Tanggal periksa.</div>
+            <div class="param-extra">format: YYYY-MM-DD</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">kodedokter</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Kode dokter praktik.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">jampraktek</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Jam praktik dokter.</div>
+            <div class="param-extra">format: HH:MM-HH:MM</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">jeniskunjungan</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Jenis kunjungan pasien.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">nomorreferensi</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Nomor rujukan/referensi.</div>
+
+          </div>
+        </div>
+
+        <h2 class="h2">Responses</h2>
+        <div class="resp-badge-row">
+          <span class="status-pill">200</span><span class="status-note">default</span>
+        </div>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">nomorantrean</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Nomor antrean yang diberikan.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">angkaantrean</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Angka urut antrean.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">kodebooking</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Kode booking, dipakai pada endpoint lain.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">pasienbaru</span><span
+                class="param-type">integer</span></div>
+            <div class="param-desc">Penanda apakah pasien baru (1) atau lama (0).</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">norm</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Nomor rekam medis.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">namapoli</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Nama poli.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">namadokter</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Nama dokter.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">estimasidilayani</span><span
+                class="param-type">integer</span></div>
+            <div class="param-desc">Estimasi waktu dilayani (timestamp).</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">sisakuotajkn</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Sisa kuota JKN.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">kuotajkn</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Kuota total JKN.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">sisakuotanonjkn</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Sisa kuota non-JKN.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">kuotanonjkn</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Kuota total non-JKN.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">keterangan</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Keterangan tambahan.</div>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="endpoint-section" id="ep04" data-num="04">
+        <div class="section-head">
+          <span class="section-eyebrow">Endpoint 04 / 11</span>
+          <h1 class="section-title">Check-in Poli</h1>
+        </div>
+
+        <div class="route-box">
+          <span class="method-pill" style="background:#3B82F6">POST</span>
+          <code class="route-path">/checkinantrean</code>
+        </div>
+
+        <p class="section-desc">Melakukan check-in kedatangan pasien pada antrean poli yang sudah dibuat sebelumnya.</p>
+
+        <h2 class="h2">Request</h2>
+        <h3 class="h3">Body Parameters</h3>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-token</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Token dari endpoint Mengambil Token.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-username</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">User yang diberikan pihak rumah sakit.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">kodebooking</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Kode booking dari endpoint Ambil Antrean Poli.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">waktu</span><span class="param-type">integer</span>
+            </div>
+            <div class="param-desc">Waktu check-in.</div>
+            <div class="param-extra">timestamp milliseconds</div>
+          </div>
+        </div>
+
+        <h2 class="h2">Responses</h2>
+        <div class="resp-badge-row">
+          <span class="status-pill">200</span><span class="status-note">default</span>
+        </div>
+        <div class="param-list">
+          <p class="empty-note">Tidak ada isi <code>response</code> pada endpoint ini.</p>
+        </div>
+      </section>
+
+
+      <section class="endpoint-section" id="ep05" data-num="05">
+        <div class="section-head">
+          <span class="section-eyebrow">Endpoint 05 / 11</span>
+          <h1 class="section-title">Batalkan Antrean</h1>
+        </div>
+
+        <div class="route-box">
+          <span class="method-pill" style="background:#3B82F6">POST</span>
+          <code class="route-path">/batalantrean</code>
+        </div>
+
+        <p class="section-desc">Membatalkan antrean poli. Hanya dapat dilakukan sebelum pasien melakukan check-in.</p>
+
+        <h2 class="h2">Request</h2>
+        <h3 class="h3">Body Parameters</h3>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-token</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Token dari endpoint Mengambil Token.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-username</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">User yang diberikan pihak rumah sakit.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">kodebooking</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Kode booking yang akan dibatalkan.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">keterangan</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Alasan pembatalan antrean.</div>
+
+          </div>
+        </div>
+
+        <h2 class="h2">Responses</h2>
+        <div class="resp-badge-row">
+          <span class="status-pill">200</span><span class="status-note">default</span>
+        </div>
+        <div class="param-list">
+          <p class="empty-note">Tidak ada isi <code>response</code> pada endpoint ini.</p>
+        </div>
+      </section>
+
+
+      <section class="endpoint-section" id="ep06" data-num="06">
+        <div class="section-head">
+          <span class="section-eyebrow">Endpoint 06 / 11</span>
+          <h1 class="section-title">Sisa Antrean Poli</h1>
+        </div>
+
+        <div class="route-box">
+          <span class="method-pill" style="background:#3B82F6">POST</span>
+          <code class="route-path">/sisaantrean</code>
+        </div>
+
+        <p class="section-desc">Melihat sisa antrean pasien yang sudah check-in, termasuk estimasi waktu tunggu.</p>
+
+        <h2 class="h2">Request</h2>
+        <h3 class="h3">Body Parameters</h3>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-token</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Token dari endpoint Mengambil Token.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-username</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">User yang diberikan pihak rumah sakit.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">kodebooking</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Kode booking pasien.</div>
+
+          </div>
+        </div>
+
+        <h2 class="h2">Responses</h2>
+        <div class="resp-badge-row">
+          <span class="status-pill">200</span><span class="status-note">default</span>
+        </div>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">nomorantrean</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Nomor antrean pasien.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">namapoli</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Nama poli.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">namadokter</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Nama dokter.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">sisaantrean</span><span
+                class="param-type">integer</span></div>
+            <div class="param-desc">Sisa antrean sebelum pasien dilayani.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">antreanpanggil</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Nomor antrean yang sedang dipanggil.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">waktutunggu</span><span
+                class="param-type">integer</span></div>
+            <div class="param-desc">Estimasi waktu tunggu (menit).</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">keterangan</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Keterangan tambahan.</div>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="endpoint-section" id="ep07" data-num="07">
+        <div class="section-head">
+          <span class="section-eyebrow">Endpoint 07 / 11</span>
+          <h1 class="section-title">Jadwal Operasi RS</h1>
+        </div>
+
+        <div class="route-box">
+          <span class="method-pill" style="background:#3B82F6">POST</span>
+          <code class="route-path">/jadwaloperasirs</code>
+        </div>
+
+        <p class="section-desc">Melihat daftar jadwal operasi rumah sakit dalam rentang tanggal tertentu.</p>
+
+        <h2 class="h2">Request</h2>
+        <h3 class="h3">Body Parameters</h3>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-token</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Token dari endpoint Mengambil Token.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-username</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">User yang diberikan pihak rumah sakit.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">tanggalawal</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Tanggal awal rentang pencarian.</div>
+            <div class="param-extra">format: YYYY-MM-DD</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">tanggalakhir</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Tanggal akhir rentang pencarian.</div>
+            <div class="param-extra">format: YYYY-MM-DD</div>
+          </div>
+        </div>
+
+        <h2 class="h2">Responses</h2>
+        <div class="resp-badge-row">
+          <span class="status-pill">200</span><span class="status-note">default</span>
+        </div>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">list[].kodebooking</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Kode booking operasi.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">list[].tanggaloperasi</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Tanggal operasi.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">list[].jenistindakan</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Jenis tindakan operasi.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">list[].kodepoli</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Kode poli terkait.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">list[].namapoli</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Nama poli terkait.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">list[].terlaksana</span><span
+                class="param-type">integer</span></div>
+            <div class="param-desc">Status pelaksanaan operasi.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">list[].nopeserta</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Nomor peserta BPJS.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">list[].lastupdate</span><span
+                class="param-type">integer</span></div>
+            <div class="param-desc">Waktu pembaruan terakhir.</div>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="endpoint-section" id="ep08" data-num="08">
+        <div class="section-head">
+          <span class="section-eyebrow">Endpoint 08 / 11</span>
+          <h1 class="section-title">Jadwal Operasi Pasien</h1>
+        </div>
+
+        <div class="route-box">
+          <span class="method-pill" style="background:#3B82F6">POST</span>
+          <code class="route-path">/jadwaloperasipasien</code>
+        </div>
+
+        <p class="section-desc">Melihat daftar jadwal operasi milik satu peserta berdasarkan nomor peserta BPJS.</p>
+
+        <h2 class="h2">Request</h2>
+        <h3 class="h3">Body Parameters</h3>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-token</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Token dari endpoint Mengambil Token.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-username</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">User yang diberikan pihak rumah sakit.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">nopeserta</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Nomor peserta BPJS.</div>
+
+          </div>
+        </div>
+
+        <h2 class="h2">Responses</h2>
+        <div class="resp-badge-row">
+          <span class="status-pill">200</span><span class="status-note">default</span>
+        </div>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">list[].kodebooking</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Kode booking operasi.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">list[].tanggaloperasi</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Tanggal operasi.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">list[].jenistindakan</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Jenis tindakan operasi.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">list[].kodepoli</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Kode poli terkait.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">list[].namapoli</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Nama poli terkait.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">list[].terlaksana</span><span
+                class="param-type">integer</span></div>
+            <div class="param-desc">Status pelaksanaan operasi.</div>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="endpoint-section" id="ep09" data-num="09">
+        <div class="section-head">
+          <span class="section-eyebrow">Endpoint 09 / 11</span>
+          <h1 class="section-title">Pasien Baru</h1>
+        </div>
+
+        <div class="route-box">
+          <span class="method-pill" style="background:#3B82F6">POST</span>
+          <code class="route-path">/pasienbaru</code>
+        </div>
+
+        <p class="section-desc">Mendaftarkan pasien baru ke sistem rumah sakit dan mengembalikan nomor rekam medis
+          (norm).</p>
+
+        <h2 class="h2">Request</h2>
+        <h3 class="h3">Body Parameters</h3>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-token</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Token dari endpoint Mengambil Token.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-username</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">User yang diberikan pihak rumah sakit.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">nomorkartu</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Nomor kartu BPJS peserta.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">nik</span><span class="param-type">string</span></div>
+            <div class="param-desc">Nomor Induk Kependudukan.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">nomorkk</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Nomor Kartu Keluarga.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">nama</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Nama lengkap pasien.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">jeniskelamin</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Jenis kelamin.</div>
+            <div class="param-extra">allowed: L, P</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">tanggallahir</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Tanggal lahir.</div>
+            <div class="param-extra">format: YYYY-MM-DD</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">nohp</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Nomor HP pasien.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">alamat</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Alamat lengkap.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">kodeprop</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Kode provinsi.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">namaprop</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Nama provinsi.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">kodedati2</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Kode kabupaten/kota.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">namadati2</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Nama kabupaten/kota.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">kodekec</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Kode kecamatan.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">namakec</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Nama kecamatan.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">kodekel</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Kode kelurahan.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">namakel</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Nama kelurahan.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">rw</span><span class="param-type">string</span></div>
+            <div class="param-desc">Nomor RW.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">rt</span><span class="param-type">string</span></div>
+            <div class="param-desc">Nomor RT.</div>
+
+          </div>
+        </div>
+
+        <h2 class="h2">Responses</h2>
+        <div class="resp-badge-row">
+          <span class="status-pill">200</span><span class="status-note">default</span>
+        </div>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">norm</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Nomor rekam medis pasien yang baru dibuat.</div>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="endpoint-section" id="ep10" data-num="10">
+        <div class="section-head">
+          <span class="section-eyebrow">Endpoint 10 / 11</span>
+          <h1 class="section-title">Ambil Antrean Farmasi</h1>
+        </div>
+
+        <div class="route-box">
+          <span class="method-pill" style="background:#3B82F6">POST</span>
+          <code class="route-path">/ambilantreanfarmasi</code>
+        </div>
+
+        <p class="section-desc">Mengambil nomor antrean farmasi untuk pasien berdasarkan kode booking kunjungan.</p>
+
+        <h2 class="h2">Request</h2>
+        <h3 class="h3">Body Parameters</h3>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-token</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Token dari endpoint Mengambil Token.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-username</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">User yang diberikan pihak rumah sakit.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">kodebooking</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Kode booking kunjungan pasien.</div>
+
+          </div>
+        </div>
+
+        <h2 class="h2">Responses</h2>
+        <div class="resp-badge-row">
+          <span class="status-pill">200</span><span class="status-note">default</span>
+        </div>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">jenisresep</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Jenis resep.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">nomorantrean</span><span
+                class="param-type">integer</span></div>
+            <div class="param-desc">Nomor antrean farmasi.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">keterangan</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Keterangan tambahan.</div>
+          </div>
+        </div>
+      </section>
+
+
+      <section class="endpoint-section" id="ep11" data-num="11">
+        <div class="section-head">
+          <span class="section-eyebrow">Endpoint 11 / 11</span>
+          <h1 class="section-title">Status Antrean Farmasi</h1>
+        </div>
+
+        <div class="route-box">
+          <span class="method-pill" style="background:#3B82F6">POST</span>
+          <code class="route-path">/statusantreanfarmasi</code>
+        </div>
+
+        <p class="section-desc">Menampilkan status antrean farmasi berjalan, termasuk sisa antrean dan nomor yang sedang
+          dipanggil.</p>
+
+        <h2 class="h2">Request</h2>
+        <h3 class="h3">Body Parameters</h3>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-token</span><span class="param-type">string</span>
+            </div>
+            <div class="param-desc">Token dari endpoint Mengambil Token.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">x-username</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">User yang diberikan pihak rumah sakit.</div>
+
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">kodebooking</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Kode booking kunjungan pasien.</div>
+
+          </div>
+        </div>
+
+        <h2 class="h2">Responses</h2>
+        <div class="resp-badge-row">
+          <span class="status-pill">200</span><span class="status-note">default</span>
+        </div>
+        <div class="param-list">
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">jenisresep</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Jenis resep.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">totalantrean</span><span
+                class="param-type">integer</span></div>
+            <div class="param-desc">Total antrean farmasi hari ini.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">sisaantrean</span><span
+                class="param-type">integer</span></div>
+            <div class="param-desc">Sisa antrean farmasi.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">antreanpanggil</span><span
+                class="param-type">integer</span></div>
+            <div class="param-desc">Nomor antrean yang sedang dipanggil.</div>
+          </div>
+
+          <div class="param-row">
+            <div class="param-name-line"><span class="param-name">keterangan</span><span
+                class="param-type">string</span></div>
+            <div class="param-desc">Keterangan tambahan.</div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <div class="rail-outer">
+      <aside class="rail active" data-rail-for="overview"></aside>
+
+      <aside class="rail" data-rail-for="ep01">
+        <div class="rail-inner">
+          <div class="rail-card">
+            <div class="rail-card-head"><span class="chevron">&#9662;</span> Parameters</div>
+            <div class="rail-card-body">
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-username</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-password</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Request Sample: Shell / cURL</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body curl-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
+                    class="cflag">--request</span> <span class="cmethod">GET</span> \</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
+                    class="curl2">https://mjkn.rsud-merauke.id/auth</span> \</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-username: XXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-password: XXXXXXXX'</span></span></div>
+            </div>
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Response Example</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body json-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext">{</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="jk">"response"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="jk">"token"</span>: <span
+                    class="jv">"xxxxxxxxxxxxxxxxx"</span></span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> },</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> <span class="jk">"metadata"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext"> <span class="jk">"message"</span>: <span
+                    class="jv">"Ok"</span>,</span></div>
+              <div class="cline"><span class="lno">7</span><span class="ltext"> <span class="jk">"code"</span>:
+                  200</span></div>
+              <div class="cline"><span class="lno">8</span><span class="ltext"> }</span></div>
+              <div class="cline"><span class="lno">9</span><span class="ltext">}</span></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+
+      <aside class="rail" data-rail-for="ep02">
+        <div class="rail-inner">
+          <div class="rail-card">
+            <div class="rail-card-head"><span class="chevron">&#9662;</span> Parameters</div>
+            <div class="rail-card-body">
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-token</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-username</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">kodepoli</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">kodedokter</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">tanggalperiksa</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">jampraktek</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Request Sample: Shell / cURL</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body curl-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
+                    class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
+                    class="curl2">https://mjkn.rsud-merauke.id/statusantrean</span> \</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-username: XXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'Content-Type: application/json'</span> \</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext"> <span class="cflag">--data</span> <span
+                    class="chdr">'{"kodepoli": "XXX", "kodedokter": "XXXXX", "tanggalperiksa": "XXXX-XX-XX",
+                    "jampraktek": "XX:XX-XX:XX"}'</span></span></div>
+            </div>
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Response Example</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body json-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext">{</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="jk">"response"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="jk">"namapoli"</span>:
+                  <span class="jv">"XXXXXXXXXXXXXX"</span>,</span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="jk">"namadokter"</span>:
+                  <span class="jv">"XXXXXXXXXXXXXX"</span>,</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> <span class="jk">"totalantrean"</span>:
+                  <span class="jv">"X"</span>,</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext"> <span class="jk">"sisaantrean"</span>:
+                  <span class="jv">"X"</span>,</span></div>
+              <div class="cline"><span class="lno">7</span><span class="ltext"> <span
+                    class="jk">"antreanpanggil"</span>: <span class="jv">"X-XX"</span>,</span></div>
+              <div class="cline"><span class="lno">8</span><span class="ltext"> <span class="jk">"sisakuotajkn"</span>:
+                  <span class="jv">"XX"</span>,</span></div>
+              <div class="cline"><span class="lno">9</span><span class="ltext"> <span class="jk">"kuotajkn"</span>:
+                  <span class="jv">"XX"</span>,</span></div>
+              <div class="cline"><span class="lno">10</span><span class="ltext"> <span
+                    class="jk">"sisakuotanonjkn"</span>: <span class="jv">"XX"</span>,</span></div>
+              <div class="cline"><span class="lno">11</span><span class="ltext"> <span class="jk">"kuotanonjkn"</span>:
+                  <span class="jv">"XX"</span>,</span></div>
+              <div class="cline"><span class="lno">12</span><span class="ltext"> <span class="jk">"keterangan"</span>:
+                  <span class="jv">"XXXXXXXXXXXXXX"</span></span></div>
+              <div class="cline"><span class="lno">13</span><span class="ltext"> },</span></div>
+              <div class="cline"><span class="lno">14</span><span class="ltext"> <span class="jk">"metadata"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">15</span><span class="ltext"> <span class="jk">"message"</span>:
+                  <span class="jv">"Ok"</span>,</span></div>
+              <div class="cline"><span class="lno">16</span><span class="ltext"> <span class="jk">"code"</span>:
+                  200</span></div>
+              <div class="cline"><span class="lno">17</span><span class="ltext"> }</span></div>
+              <div class="cline"><span class="lno">18</span><span class="ltext">}</span></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+
+      <aside class="rail" data-rail-for="ep03">
+        <div class="rail-inner">
+          <div class="rail-card">
+            <div class="rail-card-head"><span class="chevron">&#9662;</span> Parameters</div>
+            <div class="rail-card-body">
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-token</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-username</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">nomorkartu</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">nik</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">nohp</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">kodepoli</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">norm</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">tanggalperiksa</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">kodedokter</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">jampraktek</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">jeniskunjungan</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">nomorreferensi</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Request Sample: Shell / cURL</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body curl-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
+                    class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
+                    class="curl2">https://mjkn.rsud-merauke.id/ambilantrean</span> \</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-username: XXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'Content-Type: application/json'</span> \</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext"> <span class="cflag">--data</span> <span
+                    class="chdr">'{"nomorkartu": "XXXXXXXXXXXXXX", "nik": "XXXXXXXXXXXXXXXXX", "nohp": "XXXXXXXX",
+                    "kodepoli": "XXX", "norm": "XXXXX", "tanggalperiksa": "XXXX-XX-XX", "kodedokter": "XXXXX",
+                    "jampraktek": "XX:XX-XX:XX", "jeniskunjungan": "x", "nomorreferensi": "XXXXXXXXXXXX"}'</span></span>
+              </div>
+            </div>
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Response Example</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body json-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext">{</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="jk">"response"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="jk">"nomorantrean"</span>:
+                  <span class="jv">"X-XXX"</span>,</span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="jk">"angkaantrean"</span>:
+                  <span class="jv">"XXX"</span>,</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> <span class="jk">"kodebooking"</span>:
+                  <span class="jv">"XXXXXXXXXXXXX"</span>,</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext"> <span class="jk">"pasienbaru"</span>:
+                  X,</span></div>
+              <div class="cline"><span class="lno">7</span><span class="ltext"> <span class="jk">"norm"</span>: <span
+                    class="jv">"XXXXXX"</span>,</span></div>
+              <div class="cline"><span class="lno">8</span><span class="ltext"> <span class="jk">"namapoli"</span>:
+                  <span class="jv">"XXXXXXXXXXXXXXX"</span>,</span></div>
+              <div class="cline"><span class="lno">9</span><span class="ltext"> <span class="jk">"namadokter"</span>:
+                  <span class="jv">"XXXXXXXXXXXXXXX"</span>,</span></div>
+              <div class="cline"><span class="lno">10</span><span class="ltext"> <span
+                    class="jk">"estimasidilayani"</span>: XXXXXXX,</span></div>
+              <div class="cline"><span class="lno">11</span><span class="ltext"> <span class="jk">"sisakuotajkn"</span>:
+                  <span class="jv">"XX"</span>,</span></div>
+              <div class="cline"><span class="lno">12</span><span class="ltext"> <span class="jk">"kuotajkn"</span>:
+                  <span class="jv">"XX"</span>,</span></div>
+              <div class="cline"><span class="lno">13</span><span class="ltext"> <span
+                    class="jk">"sisakuotanonjkn"</span>: <span class="jv">"XXX"</span>,</span></div>
+              <div class="cline"><span class="lno">14</span><span class="ltext"> <span class="jk">"kuotanonjkn"</span>:
+                  <span class="jv">"XXX"</span>,</span></div>
+              <div class="cline"><span class="lno">15</span><span class="ltext"> <span class="jk">"keterangan"</span>:
+                  <span class="jv">"XXXXXXXXXXXXXXXX"</span></span></div>
+              <div class="cline"><span class="lno">16</span><span class="ltext"> },</span></div>
+              <div class="cline"><span class="lno">17</span><span class="ltext"> <span class="jk">"metadata"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">18</span><span class="ltext"> <span class="jk">"message"</span>:
+                  <span class="jv">"Ok"</span>,</span></div>
+              <div class="cline"><span class="lno">19</span><span class="ltext"> <span class="jk">"code"</span>:
+                  200</span></div>
+              <div class="cline"><span class="lno">20</span><span class="ltext"> }</span></div>
+              <div class="cline"><span class="lno">21</span><span class="ltext">}</span></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+
+      <aside class="rail" data-rail-for="ep04">
+        <div class="rail-inner">
+          <div class="rail-card">
+            <div class="rail-card-head"><span class="chevron">&#9662;</span> Parameters</div>
+            <div class="rail-card-body">
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-token</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-username</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">kodebooking</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">waktu</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">integer</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Request Sample: Shell / cURL</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body curl-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
+                    class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
+                    class="curl2">https://mjkn.rsud-merauke.id/checkinantrean</span> \</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-username: XXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'Content-Type: application/json'</span> \</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext"> <span class="cflag">--data</span> <span
+                    class="chdr">'{"kodebooking": "XXXXXXXXXXXXXX", "waktu": "XXXXXXXXXXX"}'</span></span></div>
+            </div>
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Response Example</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body json-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext">{</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="jk">"metadata"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="jk">"message"</span>: <span
+                    class="jv">"Ok"</span>,</span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="jk">"code"</span>:
+                  200</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> }</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext">}</span></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+
+      <aside class="rail" data-rail-for="ep05">
+        <div class="rail-inner">
+          <div class="rail-card">
+            <div class="rail-card-head"><span class="chevron">&#9662;</span> Parameters</div>
+            <div class="rail-card-body">
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-token</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-username</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">kodebooking</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">keterangan</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Request Sample: Shell / cURL</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body curl-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
+                    class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
+                    class="curl2">https://mjkn.rsud-merauke.id/batalantrean</span> \</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-username: XXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'Content-Type: application/json'</span> \</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext"> <span class="cflag">--data</span> <span
+                    class="chdr">'{"kodebooking": "XXXXXXXXXXXXXX", "keterangan":
+                    "XXXXXXXXXXXXXXXXXXXXXXX"}'</span></span></div>
+            </div>
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Response Example</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body json-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext">{</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="jk">"metadata"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="jk">"message"</span>: <span
+                    class="jv">"Ok"</span>,</span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="jk">"code"</span>:
+                  200</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> }</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext">}</span></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+
+      <aside class="rail" data-rail-for="ep06">
+        <div class="rail-inner">
+          <div class="rail-card">
+            <div class="rail-card-head"><span class="chevron">&#9662;</span> Parameters</div>
+            <div class="rail-card-body">
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-token</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-username</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">kodebooking</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Request Sample: Shell / cURL</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body curl-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
+                    class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
+                    class="curl2">https://mjkn.rsud-merauke.id/sisaantrean</span> \</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-username: XXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'Content-Type: application/json'</span> \</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext"> <span class="cflag">--data</span> <span
+                    class="chdr">'{"kodebooking": "XXXXXXXXXXXXXX"}'</span></span></div>
+            </div>
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Response Example</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body json-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext">{</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="jk">"response"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="jk">"nomorantrean"</span>:
+                  <span class="jv">"XXXX"</span>,</span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="jk">"namapoli"</span>:
+                  <span class="jv">"XXXXXXXXXXXX"</span>,</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> <span class="jk">"namadokter"</span>:
+                  <span class="jv">"XXXXXXXXXXX"</span>,</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext"> <span class="jk">"sisaantrean"</span>:
+                  XX,</span></div>
+              <div class="cline"><span class="lno">7</span><span class="ltext"> <span
+                    class="jk">"antreanpanggil"</span>: <span class="jv">"XXXX"</span>,</span></div>
+              <div class="cline"><span class="lno">8</span><span class="ltext"> <span class="jk">"waktutunggu"</span>:
+                  XXXX,</span></div>
+              <div class="cline"><span class="lno">9</span><span class="ltext"> <span class="jk">"keterangan"</span>:
+                  <span class="jv">"XXXXX"</span></span></div>
+              <div class="cline"><span class="lno">10</span><span class="ltext"> },</span></div>
+              <div class="cline"><span class="lno">11</span><span class="ltext"> <span class="jk">"metadata"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">12</span><span class="ltext"> <span class="jk">"message"</span>:
+                  <span class="jv">"Ok"</span>,</span></div>
+              <div class="cline"><span class="lno">13</span><span class="ltext"> <span class="jk">"code"</span>:
+                  200</span></div>
+              <div class="cline"><span class="lno">14</span><span class="ltext"> }</span></div>
+              <div class="cline"><span class="lno">15</span><span class="ltext">}</span></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+
+      <aside class="rail" data-rail-for="ep07">
+        <div class="rail-inner">
+          <div class="rail-card">
+            <div class="rail-card-head"><span class="chevron">&#9662;</span> Parameters</div>
+            <div class="rail-card-body">
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-token</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-username</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">tanggalawal</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">tanggalakhir</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Request Sample: Shell / cURL</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body curl-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
+                    class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
+                    class="curl2">https://mjkn.rsud-merauke.id/jadwaloperasirs</span> \</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-username: XXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'Content-Type: application/json'</span> \</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext"> <span class="cflag">--data</span> <span
+                    class="chdr">'{"tanggalawal": "XXXX-XX-XX", "tanggalakhir": "XXXX-XX-XX"}'</span></span></div>
+            </div>
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Response Example</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body json-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext">{</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="jk">"response"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="jk">"list"</span>: [</span>
+              </div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> {</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> <span class="jk">"kodebooking"</span>:
+                  <span class="jv">"XXXXXXXXX"</span>,</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext"> <span
+                    class="jk">"tanggaloperasi"</span>: <span class="jv">"XXXX-XX-XX"</span>,</span></div>
+              <div class="cline"><span class="lno">7</span><span class="ltext"> <span class="jk">"jenistindakan"</span>:
+                  <span class="jv">"XXXXXXXXXXXXXXXXX"</span>,</span></div>
+              <div class="cline"><span class="lno">8</span><span class="ltext"> <span class="jk">"kodepoli"</span>:
+                  <span class="jv">"XXX"</span>,</span></div>
+              <div class="cline"><span class="lno">9</span><span class="ltext"> <span class="jk">"namapoli"</span>:
+                  <span class="jv">"XXXXXXXXXXXXX"</span>,</span></div>
+              <div class="cline"><span class="lno">10</span><span class="ltext"> <span class="jk">"terlaksana"</span>:
+                  X,</span></div>
+              <div class="cline"><span class="lno">11</span><span class="ltext"> <span class="jk">"nopeserta"</span>:
+                  <span class="jv">"XXXXXXXXXX"</span>,</span></div>
+              <div class="cline"><span class="lno">12</span><span class="ltext"> <span class="jk">"lastupdate"</span>:
+                  XXXXXXXX</span></div>
+              <div class="cline"><span class="lno">13</span><span class="ltext"> }</span></div>
+              <div class="cline"><span class="lno">14</span><span class="ltext"> ]</span></div>
+              <div class="cline"><span class="lno">15</span><span class="ltext"> },</span></div>
+              <div class="cline"><span class="lno">16</span><span class="ltext"> <span class="jk">"metadata"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">17</span><span class="ltext"> <span class="jk">"message"</span>:
+                  <span class="jv">"Ok"</span>,</span></div>
+              <div class="cline"><span class="lno">18</span><span class="ltext"> <span class="jk">"code"</span>:
+                  200</span></div>
+              <div class="cline"><span class="lno">19</span><span class="ltext"> }</span></div>
+              <div class="cline"><span class="lno">20</span><span class="ltext">}</span></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+
+      <aside class="rail" data-rail-for="ep08">
+        <div class="rail-inner">
+          <div class="rail-card">
+            <div class="rail-card-head"><span class="chevron">&#9662;</span> Parameters</div>
+            <div class="rail-card-body">
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-token</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-username</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">nopeserta</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Request Sample: Shell / cURL</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body curl-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
+                    class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
+                    class="curl2">https://mjkn.rsud-merauke.id/jadwaloperasipasien</span> \</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-username: XXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'Content-Type: application/json'</span> \</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext"> <span class="cflag">--data</span> <span
+                    class="chdr">'{"nopeserta": "XXXXXXXXXX"}'</span></span></div>
+            </div>
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Response Example</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body json-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext">{</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="jk">"response"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="jk">"list"</span>: [</span>
+              </div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> {</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> <span class="jk">"kodebooking"</span>:
+                  <span class="jv">"XXXXXXXXX"</span>,</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext"> <span
+                    class="jk">"tanggaloperasi"</span>: <span class="jv">"XXXX-XX-XX"</span>,</span></div>
+              <div class="cline"><span class="lno">7</span><span class="ltext"> <span class="jk">"jenistindakan"</span>:
+                  <span class="jv">"XXXXXXXXXXXXXXXXX"</span>,</span></div>
+              <div class="cline"><span class="lno">8</span><span class="ltext"> <span class="jk">"kodepoli"</span>:
+                  <span class="jv">"XXX"</span>,</span></div>
+              <div class="cline"><span class="lno">9</span><span class="ltext"> <span class="jk">"namapoli"</span>:
+                  <span class="jv">"XXXXXXXXXXXXX"</span>,</span></div>
+              <div class="cline"><span class="lno">10</span><span class="ltext"> <span class="jk">"terlaksana"</span>:
+                  X</span></div>
+              <div class="cline"><span class="lno">11</span><span class="ltext"> }</span></div>
+              <div class="cline"><span class="lno">12</span><span class="ltext"> ]</span></div>
+              <div class="cline"><span class="lno">13</span><span class="ltext"> },</span></div>
+              <div class="cline"><span class="lno">14</span><span class="ltext"> <span class="jk">"metadata"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">15</span><span class="ltext"> <span class="jk">"message"</span>:
+                  <span class="jv">"Ok"</span>,</span></div>
+              <div class="cline"><span class="lno">16</span><span class="ltext"> <span class="jk">"code"</span>:
+                  200</span></div>
+              <div class="cline"><span class="lno">17</span><span class="ltext"> }</span></div>
+              <div class="cline"><span class="lno">18</span><span class="ltext">}</span></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+
+      <aside class="rail" data-rail-for="ep09">
+        <div class="rail-inner">
+          <div class="rail-card">
+            <div class="rail-card-head"><span class="chevron">&#9662;</span> Parameters</div>
+            <div class="rail-card-body">
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-token</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-username</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">nomorkartu</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">nik</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">nomorkk</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">nama</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">jeniskelamin</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">tanggallahir</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">nohp</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">alamat</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">kodeprop</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">namaprop</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">kodedati2</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">namadati2</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">kodekec</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">namakec</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">kodekel</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">namakel</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">rw</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">rt</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Request Sample: Shell / cURL</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body curl-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
+                    class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
+                    class="curl2">https://mjkn.rsud-merauke.id/pasienbaru</span> \</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-username: XXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'Content-Type: application/json'</span> \</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext"> <span class="cflag">--data</span> <span
+                    class="chdr">'{"nomorkartu": "XXXXXXXXXXXXX", "nik": "XXXXXXXXXXX", "nomorkk": "XXXXXXXX", "nama":
+                    "XXXXXXXXXXXXXXXXXXXXXXXXXXX", "jeniskelamin": "L/P", "tanggallahir": "XXXX-XX-XX", "nohp":
+                    "XXXXXXXXXXXX", "alamat": "XXXXXXXX", "kodeprop": "XX", "namaprop": "XXXXXXXXXXXXXXX", "kodedati2":
+                    "XXXXXXX", "namadati2": "XXXXXXXXXXXXXXX", "kodekec": "XXXX", "namakec": "XXXXXXXXXXXXXX",
+                    "kodekel": "XXXX", "namakel": "XXXXXXXXXXXXX", "rw": "XXX", "rt": "XXX"}'</span></span></div>
+            </div>
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Response Example</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body json-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext">{</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="jk">"response"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="jk">"norm"</span>: <span
+                    class="jv">"XXXXXX"</span></span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> },</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> <span class="jk">"metadata"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext"> <span class="jk">"message"</span>: <span
+                    class="jv">"Ok"</span>,</span></div>
+              <div class="cline"><span class="lno">7</span><span class="ltext"> <span class="jk">"code"</span>:
+                  200</span></div>
+              <div class="cline"><span class="lno">8</span><span class="ltext"> }</span></div>
+              <div class="cline"><span class="lno">9</span><span class="ltext">}</span></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+
+      <aside class="rail" data-rail-for="ep10">
+        <div class="rail-inner">
+          <div class="rail-card">
+            <div class="rail-card-head"><span class="chevron">&#9662;</span> Parameters</div>
+            <div class="rail-card-body">
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-token</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-username</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">kodebooking</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Request Sample: Shell / cURL</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body curl-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
+                    class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
+                    class="curl2">https://mjkn.rsud-merauke.id/ambilantreanfarmasi</span> \</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-username: XXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'Content-Type: application/json'</span> \</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext"> <span class="cflag">--data</span> <span
+                    class="chdr">'{"kodebooking": "XXXXXXXXXXXXX"}'</span></span></div>
+            </div>
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Response Example</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body json-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext">{</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="jk">"response"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="jk">"jenisresep"</span>:
+                  <span class="jv">"Racikan/Non Racikan"</span>,</span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="jk">"nomorantrean"</span>:
+                  X,</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> <span class="jk">"keterangan"</span>:
+                  <span class="jv">"XXXXXXXXXXXXXX"</span></span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext"> },</span></div>
+              <div class="cline"><span class="lno">7</span><span class="ltext"> <span class="jk">"metadata"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">8</span><span class="ltext"> <span class="jk">"message"</span>: <span
+                    class="jv">"Ok"</span>,</span></div>
+              <div class="cline"><span class="lno">9</span><span class="ltext"> <span class="jk">"code"</span>:
+                  200</span></div>
+              <div class="cline"><span class="lno">10</span><span class="ltext"> }</span></div>
+              <div class="cline"><span class="lno">11</span><span class="ltext">}</span></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+
+      <aside class="rail" data-rail-for="ep11">
+        <div class="rail-inner">
+          <div class="rail-card">
+            <div class="rail-card-head"><span class="chevron">&#9662;</span> Parameters</div>
+            <div class="rail-card-body">
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-token</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">x-username</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+
+              <div class="rail-param">
+                <span class="rail-param-name">kodebooking</span>
+                <span class="rail-param-colon">:</span>
+                <span class="rail-param-type">string</span>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Request Sample: Shell / cURL</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body curl-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
+                    class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
+                    class="curl2">https://mjkn.rsud-merauke.id/statusantreanfarmasi</span> \</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'x-username: XXXXXXXX'</span> \</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> <span class="cflag">--header</span>
+                  <span class="chdr">'Content-Type: application/json'</span> \</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext"> <span class="cflag">--data</span> <span
+                    class="chdr">'{"kodebooking": "XXXXXXXXXXXXX"}'</span></span></div>
+            </div>
+          </div>
+
+          <div class="code-card">
+            <div class="code-card-head">
+              <span>Response Example</span>
+              <span class="copy-icon" title="Copy">&#10063;</span>
+            </div>
+            <div class="code-card-body json-body">
+              <div class="cline"><span class="lno">1</span><span class="ltext">{</span></div>
+              <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="jk">"response"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="jk">"jenisresep"</span>:
+                  <span class="jv">"Racikan/Non Racikan"</span>,</span></div>
+              <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="jk">"totalantrean"</span>:
+                  XXx,</span></div>
+              <div class="cline"><span class="lno">5</span><span class="ltext"> <span class="jk">"sisaantrean"</span>:
+                  xxx,</span></div>
+              <div class="cline"><span class="lno">6</span><span class="ltext"> <span
+                    class="jk">"antreanpanggil"</span>: xxx,</span></div>
+              <div class="cline"><span class="lno">7</span><span class="ltext"> <span class="jk">"keterangan"</span>:
+                  <span class="jv">"XXXXXX"</span></span></div>
+              <div class="cline"><span class="lno">8</span><span class="ltext"> },</span></div>
+              <div class="cline"><span class="lno">9</span><span class="ltext"> <span class="jk">"metadata"</span>:
+                  {</span></div>
+              <div class="cline"><span class="lno">10</span><span class="ltext"> <span class="jk">"message"</span>:
+                  <span class="jv">"Ok"</span>,</span></div>
+              <div class="cline"><span class="lno">11</span><span class="ltext"> <span class="jk">"code"</span>:
+                  200</span></div>
+              <div class="cline"><span class="lno">12</span><span class="ltext"> }</span></div>
+              <div class="cline"><span class="lno">13</span><span class="ltext">}</span></div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      var navItems = document.querySelectorAll('.nav-item, .nav-overview');
+      var sections = document.querySelectorAll('.endpoint-section');
+      var rails = document.querySelectorAll('.rail');
+
+      function activate(target) {
+        sections.forEach(function (s) { s.classList.toggle('active', s.id === target); });
+        rails.forEach(function (r) { r.classList.toggle('active', r.getAttribute('data-rail-for') === target); });
+        navItems.forEach(function (n) { n.classList.toggle('active', n.getAttribute('data-target') === target); });
+        window.scrollTo({ top: 0, behavior: 'instant' });
+      }
+
+      navItems.forEach(function (n) {
+        n.addEventListener('click', function (e) {
+          e.preventDefault();
+          activate(n.getAttribute('data-target'));
+          history.replaceState(null, '', '#' + n.getAttribute('data-target'));
+        });
+      });
+
+      var initial = (location.hash || '#overview').replace('#', '');
+      if (!document.getElementById(initial)) { initial = 'overview'; }
+      activate(initial);
+    })();
+  </script>
+
+</body>
+
+</html>
