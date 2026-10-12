@@ -2131,6 +2131,14 @@ function tampil()
     // override Content-Type yang sudah di-set jadi application/json di atas
     header('Content-Type: text/html; charset=UTF-8');
     http_response_code(200);
-    include __DIR__ . '/dokumentasi.php';
+    $docPhp  = __DIR__ . '/dokumentasi.php';
+    $docHtml = __DIR__ . '/dokumentasi.html';
+    if (is_file($docPhp)) {
+        include $docPhp;
+    } elseif (is_file($docHtml)) {
+        echo str_replace('https://mjkn.rsud-merauke' . '.id', APP_URL, file_get_contents($docHtml));
+    } else {
+        echo 'Dokumentasi tidak ditemukan. Pastikan dokumentasi.php ada di folder: ' . htmlspecialchars(__DIR__);
+    }
     exit;
 }
