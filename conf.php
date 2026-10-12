@@ -39,6 +39,9 @@
     @define('CARABAYAR', $akunbpjs['kd_pj']);
 
     function bukakoneksi() {
+        if (isset($GLOBALS['__mjkn_conn']) && $GLOBALS['__mjkn_conn'] instanceof mysqli && !$GLOBALS['__mjkn_conn']->connect_errno) {
+            return $GLOBALS['__mjkn_conn'];
+        }
         $response = array(
             'metadata' => array(
                 'titile' => 'Configurasi Not Found !',
@@ -46,14 +49,27 @@
                 'code' => 404
             )
         );
-        $konektor = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME) or die("" . json_encode($response, true) . "");
+        $konektor = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+        if (!$konektor) {
+            die("" . json_encode($response, true) . "");
+        }
+        mysqli_set_charset($konektor, 'utf8mb4');
+        $GLOBALS['__mjkn_conn'] = $konektor;
         return $konektor;
     }
+
+    function tutupkoneksi() {
+        if (isset($GLOBALS['__mjkn_conn']) && $GLOBALS['__mjkn_conn'] instanceof mysqli) {
+            @mysqli_close($GLOBALS['__mjkn_conn']);
+            $GLOBALS['__mjkn_conn'] = null;
+        }
+    }
+
+    register_shutdown_function('tutupkoneksi');
     
     function cleankar($dirty){
         $konektor=bukakoneksi();
 	$clean = mysqli_real_escape_string($konektor,$dirty);	
-	mysqli_close($konektor);
 	return preg_replace('/[^a-zA-Z0-9\s_,@. ]/', '',$clean);
     }
 
@@ -72,26 +88,24 @@
         return $while;
     }
 
-    function tutupkoneksi(){
-        global $konektor;
-        mysqli_close($konektor);
-    }
+    // tutupkoneksi sudah dialihkan ke reuse+shutdown
 
     function bukaquery2($sql){
         $konektor = bukakoneksi();
         $result = mysqli_query($konektor,$sql);
-        mysqli_close($konektor);
         return $result;
     }
     
     function bukaquery3($sql){
         $konektor = bukakoneksi();
         mysqli_query($konektor,$sql);
-        mysqli_close($konektor);
     }
 
     function getOne2($sql) {
         $hasil = bukaquery2($sql);
+        if (!$hasil) {
+            return null;
+        }
         list($result) = mysqli_fetch_array($hasil);
         return $result;
     }
@@ -106,19 +120,20 @@
         );
         http_response_code(201);
         $result = mysqli_query($konektor, $sql) or die(/*mysqli_error($konektor)."".*/json_encode($response)."");
-        mysqli_close($konektor);
         return $result;
     }
     
     function bukainput($sql) {
         $konektor = bukakoneksi();
         $result = mysqli_query($konektor, $sql) or die("Gagal menjalankan query !");
-        mysqli_close($konektor);
         return $result;
     }
     
     function getOne($sql){
         $hasil = bukaquery($sql);
+        if (!$hasil) {
+            return null;
+        }
         list($result) = fetch_array($hasil);
         return $result;
     }
@@ -126,7 +141,6 @@
     function escape($string){
         $konektor = bukakoneksi();
         $result = mysqli_real_escape_string($konektor, $string);
-        mysqli_close($konektor);
         return $result;
     }
 
@@ -147,6 +161,51 @@
             $no_reg = sprintf("%03s", $max);
         }
         return $no_reg;
+    }
+
+    function nextNoRawat($tanggal) {
+        if (empty($tanggal)) {
+            return '000001';
+        }
+        $konektor = bukakoneksi();
+        $tglSafe  = mysqli_real_escape_string($konektor, $tanggal);
+        $prefix   = str_replace('-', '/', $tglSafe) . '/';
+        $sql      = "SELECT IFNULL(MAX(CAST(SUBSTRING_INDEX(no_rawat, '/', -1) AS UNSIGNED)), 0) + 1 AS nxt 
+                     FROM reg_periksa 
+                     WHERE tgl_registrasi = '$tglSafe' 
+                       AND no_rawat LIKE '" . mysqli_real_escape_string($konektor, $prefix) . "%'";
+        $res      = mysqli_query($konektor, $sql);
+        $nxt      = 1;
+        if ($res && ($row = mysqli_fetch_assoc($res))) {
+            $nxt = intval($row['nxt']);
+            if ($nxt < 1) {
+                $nxt = 1;
+            }
+        }
+        return sprintf('%06d', $nxt);
+    }
+
+    function nextNoBooking($tanggal) {
+        if (empty($tanggal)) {
+            return date('Ymd') . '000001';
+        }
+        $konektor = bukakoneksi();
+        $tglSafe  = mysqli_real_escape_string($konektor, $tanggal);
+        $tglClean = str_replace('-', '', $tglSafe);
+        $prefix   = $tglClean;
+        $sql      = "SELECT IFNULL(MAX(CAST(SUBSTRING(nobooking, 9) AS UNSIGNED)), 0) + 1 AS nxt 
+                     FROM referensi_mobilejkn_bpjs 
+                     WHERE tanggalperiksa = '$tglSafe' 
+                       AND nobooking LIKE '" . mysqli_real_escape_string($konektor, $prefix) . "%'";
+        $res      = mysqli_query($konektor, $sql);
+        $nxt      = 1;
+        if ($res && ($row = mysqli_fetch_assoc($res))) {
+            $nxt = intval($row['nxt']);
+            if ($nxt < 1) {
+                $nxt = 1;
+            }
+        }
+        return $prefix . sprintf('%06d', $nxt);
     }
 
     function FormatTgl($format, $tanggal){
