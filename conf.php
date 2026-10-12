@@ -33,6 +33,7 @@
     define('DB_USER', getenv('DB_USER') !== false ? getenv('DB_USER') : '');
     define('DB_PASS', getenv('DB_PASS') !== false ? getenv('DB_PASS') : '');
     define('DB_NAME', getenv('DB_NAME') !== false ? getenv('DB_NAME') : '');
+    define('APP_URL', getenv('APP_URL') !== false ? rtrim(getenv('APP_URL'), '/') : '');
     $akunbpjs=fetch_array(bukaquery("select kd_pj,aes_decrypt(usere,'nur') as user,aes_decrypt(passworde,'windi') as pass FROM password_asuransi"));
     @define('USERNAME', $akunbpjs['user']);
     @define('PASSWORD', $akunbpjs['pass']);

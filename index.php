@@ -2130,6 +2130,7 @@ function tampil()
 {
     // override Content-Type yang sudah di-set jadi application/json di atas
     header('Content-Type: text/html; charset=UTF-8');
-    readfile(__DIR__ . '/dokumentasi.html');
+    http_response_code(200);
+    include __DIR__ . '/dokumentasi.php';
     exit;
 }

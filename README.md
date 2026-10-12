@@ -44,6 +44,7 @@ Web service REST API untuk integrasi **Antrean BPJS Mobile JKN** dengan SIMRS Kh
     DB_USER=root
     DB_PASS=
     DB_NAME=sik
+    APP_URL=https://mjkn.rsud-merauke.id
    ```
 
    > Prefix `p:` pada `DB_HOST` menandakan **persistent connection** mysqli.
@@ -124,7 +125,7 @@ curl -X POST "http://alamat-server/api-mjkn/?url=ambilantrean" \
 .
 ├── index.php          # Router & seluruh endpoint API
 ├── conf.php           # Loader .env, koneksi, & fungsi helper database
-├── dokumentasi.html   # Dokumentasi tampilan
+├── dokumentasi.php   # Dokumentasi tampilan (base URL dari APP_URL)
 ├── .env-example       # Contoh konfigurasi environment
 └── .gitignore         # Mengabaikan .env
 ```

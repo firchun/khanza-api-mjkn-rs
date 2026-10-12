@@ -1,3 +1,24 @@
+<?php
+if (!defined('APP_URL')) {
+    $appUrl  = 'https://mjkn.rsud-merauke' . '.id';
+    $envFile = __DIR__ . '/.env';
+    if (is_file($envFile)) {
+        foreach (file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+            $line = trim($line);
+            if ($line === '' || $line[0] === '#') {
+                continue;
+            }
+            if (strpos($line, 'APP_URL=') !== 0) {
+                continue;
+            }
+            $appUrl = trim(substr($line, 8));
+            $appUrl = trim($appUrl, "\"'");
+            break;
+        }
+    }
+    define('APP_URL', rtrim($appUrl, '/'));
+}
+?>
 <!DOCTYPE html>
 <html lang="id">
 
@@ -654,7 +675,7 @@
           sertakan token tersebut pada header setiap permintaan berikutnya bersama <code>x-username</code>.</p>
         <div class="route-box">
           <span class="method-pill" style="background:#3B82F6">BASE</span>
-          <code class="route-path">https://mjkn.rsud-merauke.id</code>
+          <code class="route-path"><?= APP_URL ?></code>
         </div>
         <h2 class="h2">Format Respons</h2>
         <p class="section-desc">Setiap respons sukses memuat objek <code>metadata</code> dengan <code>code: 200</code>
@@ -1768,7 +1789,7 @@
               <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
                     class="cflag">--request</span> <span class="cmethod">GET</span> \</span></div>
               <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
-                    class="curl2">https://mjkn.rsud-merauke.id/auth</span> \</span></div>
+                    class="curl2"><?= APP_URL ?>/auth</span> \</span></div>
               <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
                   <span class="chdr">'x-username: XXXXXXXX'</span> \</span></div>
               <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
@@ -1856,7 +1877,7 @@
               <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
                     class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
               <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
-                    class="curl2">https://mjkn.rsud-merauke.id/statusantrean</span> \</span></div>
+                    class="curl2"><?= APP_URL ?>/statusantrean</span> \</span></div>
               <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
                   <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
               <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
@@ -2003,7 +2024,7 @@
               <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
                     class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
               <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
-                    class="curl2">https://mjkn.rsud-merauke.id/ambilantrean</span> \</span></div>
+                    class="curl2"><?= APP_URL ?>/ambilantrean</span> \</span></div>
               <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
                   <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
               <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
@@ -2110,7 +2131,7 @@
               <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
                     class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
               <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
-                    class="curl2">https://mjkn.rsud-merauke.id/checkinantrean</span> \</span></div>
+                    class="curl2"><?= APP_URL ?>/checkinantrean</span> \</span></div>
               <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
                   <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
               <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
@@ -2185,7 +2206,7 @@
               <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
                     class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
               <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
-                    class="curl2">https://mjkn.rsud-merauke.id/batalantrean</span> \</span></div>
+                    class="curl2"><?= APP_URL ?>/batalantrean</span> \</span></div>
               <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
                   <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
               <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
@@ -2255,7 +2276,7 @@
               <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
                     class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
               <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
-                    class="curl2">https://mjkn.rsud-merauke.id/sisaantrean</span> \</span></div>
+                    class="curl2"><?= APP_URL ?>/sisaantrean</span> \</span></div>
               <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
                   <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
               <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
@@ -2347,7 +2368,7 @@
               <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
                     class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
               <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
-                    class="curl2">https://mjkn.rsud-merauke.id/jadwaloperasirs</span> \</span></div>
+                    class="curl2"><?= APP_URL ?>/jadwaloperasirs</span> \</span></div>
               <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
                   <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
               <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
@@ -2440,7 +2461,7 @@
               <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
                     class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
               <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
-                    class="curl2">https://mjkn.rsud-merauke.id/jadwaloperasipasien</span> \</span></div>
+                    class="curl2"><?= APP_URL ?>/jadwaloperasipasien</span> \</span></div>
               <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
                   <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
               <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
@@ -2631,7 +2652,7 @@
               <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
                     class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
               <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
-                    class="curl2">https://mjkn.rsud-merauke.id/pasienbaru</span> \</span></div>
+                    class="curl2"><?= APP_URL ?>/pasienbaru</span> \</span></div>
               <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
                   <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
               <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
@@ -2709,7 +2730,7 @@
               <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
                     class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
               <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
-                    class="curl2">https://mjkn.rsud-merauke.id/ambilantreanfarmasi</span> \</span></div>
+                    class="curl2"><?= APP_URL ?>/ambilantreanfarmasi</span> \</span></div>
               <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
                   <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
               <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
@@ -2787,7 +2808,7 @@
               <div class="cline"><span class="lno">1</span><span class="ltext"><span class="ccmd">curl</span> <span
                     class="cflag">--request</span> <span class="cmethod">POST</span> \</span></div>
               <div class="cline"><span class="lno">2</span><span class="ltext"> <span class="cflag">--url</span> <span
-                    class="curl2">https://mjkn.rsud-merauke.id/statusantreanfarmasi</span> \</span></div>
+                    class="curl2"><?= APP_URL ?>/statusantreanfarmasi</span> \</span></div>
               <div class="cline"><span class="lno">3</span><span class="ltext"> <span class="cflag">--header</span>
                   <span class="chdr">'x-token: XXXXXXXXXXXXXXXXX'</span> \</span></div>
               <div class="cline"><span class="lno">4</span><span class="ltext"> <span class="cflag">--header</span>
