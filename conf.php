@@ -1,4 +1,66 @@
 <?php
+    /* ======================================================================
+     * LOGGING: semua error PHP dikirim ke log PHP-FPM (yang diteruskan nginx)
+     *  - display_errors dimatikan agar output tetap JSON bersih ke BPJS.
+     *  - set_error_handler  -> warning/notice/deprecated
+     *  - set_exception_handler -> uncaught exception
+     *  - register_shutdown_function -> fatal error (E_ERROR/PARSE/COMPILE)
+     * ====================================================================== */
+    @ini_set('display_errors', '0');
+    @ini_set('display_startup_errors', '0');
+    @ini_set('log_errors', '1');
+    error_reporting(E_ALL);
+
+    // Paksa mode lama: mysqli mengembalikan false + warning (bukan throw exception),
+    // agar penanganan error 201/500 di bawah konsisten di semua versi PHP (8.1+ default STRICT).
+    mysqli_report(MYSQLI_REPORT_OFF);
+
+    function mjknMaskSql($sql) {
+        $sql = (string) $sql;
+        if (strlen($sql) > 2000) {
+            $sql = substr($sql, 0, 2000) . '...<dipotong>';
+        }
+        // Samarkan literal panjang (mis. token/JWT) agar tidak bocor ke log.
+        return preg_replace_callback("/'([^']{40,})'/", function ($m) {
+            return "'<disamarkan:" . strlen($m[1]) . "char>'";
+        }, $sql);
+    }
+
+    function mjknLog($level, $message) {
+        $method = isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '-';
+        $uri    = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '-';
+        error_log(sprintf('[mjkn][%s] [%s %s] %s', $level, $method, $uri, $message));
+    }
+
+    // 2006 = server has gone away, 2013 = lost connection during query.
+    function mjknErrnoKoneksi($konektor) {
+        return in_array((int) mysqli_errno($konektor), array(2006, 2013), true);
+    }
+
+    set_error_handler(function ($severity, $message, $file, $line) {
+        if (!(error_reporting() & $severity)) {
+            return false; // error di-suppress dengan @ -> abaikan
+        }
+        mjknLog('PHP', sprintf('%s in %s:%d', $message, $file, $line));
+        return true;
+    });
+
+    set_exception_handler(function ($e) {
+        mjknLog('EXCEPTION', sprintf('%s in %s:%d', $e->getMessage(), $e->getFile(), $e->getLine()) . "\n" . $e->getTraceAsString());
+        if (!headers_sent()) {
+            http_response_code(500);
+            header('Content-Type: application/json');
+            echo json_encode(array('metadata' => array('message' => 'Internal Server Error', 'code' => 500)));
+        }
+    });
+
+    register_shutdown_function(function () {
+        $err = error_get_last();
+        if ($err && in_array($err['type'], array(E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR, E_USER_ERROR), true)) {
+            mjknLog('FATAL', sprintf('%s in %s:%d', $err['message'], $err['file'], $err['line']));
+        }
+    });
+
     date_default_timezone_set('Asia/Jakarta');
 
     function loadEnv($path) {
@@ -46,12 +108,14 @@
         $response = array(
             'metadata' => array(
                 'titile' => 'Configurasi Not Found !',
-                'message' => 'Anda Belum Melakukan Configurasi !',
-                'code' => 404
+                'message' => 'Gagal terhubung ke database',
+                'code' => 500
             )
         );
         $konektor = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
         if (!$konektor) {
+            mjknLog('DB', sprintf('Koneksi gagal: %s (host=%s db=%s)', mysqli_connect_error(), DB_HOST, DB_NAME));
+            http_response_code(500);
             die("" . json_encode($response, true) . "");
         }
         mysqli_set_charset($konektor, 'utf8mb4');
@@ -94,12 +158,28 @@
     function bukaquery2($sql){
         $konektor = bukakoneksi();
         $result = mysqli_query($konektor,$sql);
+        if ($result === false) {
+            mjknLog('SQL', sprintf('Error: %s | Query: %s', mysqli_error($konektor), mjknMaskSql($sql)));
+            if (mjknErrnoKoneksi($konektor)) {
+                mjknLog('DB', 'Koneksi terputus saat menjalankan query');
+                http_response_code(500);
+                die(json_encode(array('metadata' => array('message' => 'Gagal terhubung ke database', 'code' => 500))) . "");
+            }
+        }
         return $result;
     }
     
     function bukaquery3($sql){
         $konektor = bukakoneksi();
-        mysqli_query($konektor,$sql);
+        $result = mysqli_query($konektor,$sql);
+        if ($result === false) {
+            mjknLog('SQL', sprintf('Error: %s | Query: %s', mysqli_error($konektor), mjknMaskSql($sql)));
+            if (mjknErrnoKoneksi($konektor)) {
+                mjknLog('DB', 'Koneksi terputus saat menjalankan query');
+                http_response_code(500);
+                die(json_encode(array('metadata' => array('message' => 'Gagal terhubung ke database', 'code' => 500))) . "");
+            }
+        }
     }
 
     function getOne2($sql) {
@@ -119,14 +199,28 @@
                 'code' => 201
             )
         );
-        http_response_code(201);
-        $result = mysqli_query($konektor, $sql) or die(/*mysqli_error($konektor)."".*/json_encode($response)."");
+        $result = mysqli_query($konektor, $sql);
+        if ($result === false) {
+            mjknLog('SQL', sprintf('Error: %s | Query: %s', mysqli_error($konektor), mjknMaskSql($sql)));
+            if (mjknErrnoKoneksi($konektor)) {
+                $response['metadata']['message'] = 'Gagal terhubung ke database';
+                $response['metadata']['code']    = 500;
+                http_response_code(500);
+            } else {
+                http_response_code(201);
+            }
+            die(json_encode($response) . "");
+        }
         return $result;
     }
     
     function bukainput($sql) {
         $konektor = bukakoneksi();
-        $result = mysqli_query($konektor, $sql) or die("Gagal menjalankan query !");
+        $result = mysqli_query($konektor,$sql);
+        if ($result === false) {
+            mjknLog('SQL', sprintf('Error: %s | Query: %s', mysqli_error($konektor), mjknMaskSql($sql)));
+            die("Gagal menjalankan query !");
+        }
         return $result;
     }
     
@@ -145,23 +239,50 @@
         return $result;
     }
 
+    function errnoTerakhir(){
+        return mysqli_errno(bukakoneksi());
+    }
+
+    function mulaiTransaksi(){
+        $konektor = bukakoneksi();
+        @mysqli_query($konektor, "SET SESSION TRANSACTION ISOLATION LEVEL READ COMMITTED");
+        return @mysqli_begin_transaction($konektor);
+    }
+
+    function commitTransaksi(){
+        return @mysqli_commit(bukakoneksi());
+    }
+
+    function rollbackTransaksi(){
+        return @mysqli_rollback(bukakoneksi());
+    }
+
+    // Kunci level sesi agar alokasi nomor antrean tidak balapan antar request.
+    function ambilLock($nama, $timeout = 5){
+        $konektor = bukakoneksi();
+        $namaSafe = mysqli_real_escape_string($konektor, substr($nama, 0, 60));
+        $timeout  = intval($timeout);
+        return getOne2("select GET_LOCK('$namaSafe', $timeout)");
+    }
+
+    function lepasLock($nama){
+        $konektor = bukakoneksi();
+        $namaSafe = mysqli_real_escape_string($konektor, substr($nama, 0, 60));
+        return getOne2("select RELEASE_LOCK('$namaSafe')");
+    }
+
     function noRegPoli($kd_poli,$kd_dokter,$tanggal) {
-        //jika base No.Reg nomor registrasi
-        //$max    = getOne("select ifnull(MAX(CONVERT(no_reg,signed)),0)+1 from reg_periksa where kd_poli='$kd_poli' and kd_dokter='$kd_dokter' and tgl_registrasi='$tanggal'");
-        //$no_reg = sprintf("%03s", $max);
-        
-        //jika base No.Reg nomor booking
-        $max="";
-        $no_reg="";
-        if(getOne("select ifnull(MAX(CONVERT(no_reg,signed)),0)+1 from booking_registrasi where kd_poli='$kd_poli' and kd_dokter='$kd_dokter' and tanggal_periksa='$tanggal'")>=
-                getOne("select ifnull(MAX(CONVERT(no_reg,signed)),0)+1 from reg_periksa where kd_poli='$kd_poli' and kd_dokter='$kd_dokter' and tgl_registrasi='$tanggal'")){
-            $max    = getOne("select ifnull(MAX(CONVERT(no_reg,signed)),0)+1 from booking_registrasi where kd_poli='$kd_poli' and kd_dokter='$kd_dokter' and tanggal_periksa='$tanggal'");
-            $no_reg = sprintf("%03s", $max);
-        }else{
-            $max    = getOne("select ifnull(MAX(CONVERT(no_reg,signed)),0)+1 from reg_periksa where kd_poli='$kd_poli' and kd_dokter='$kd_dokter' and tgl_registrasi='$tanggal'");
-            $no_reg = sprintf("%03s", $max);
+        // Nomor urut antrean per poli/dokter/tanggal: ambil nilai terbesar antara
+        // booking_registrasi dan reg_periksa dalam satu query (sebelumnya 3 query terpisah).
+        $sql = "select GREATEST(
+                    IFNULL((select MAX(CONVERT(no_reg,signed)) from booking_registrasi where kd_poli='$kd_poli' and kd_dokter='$kd_dokter' and tanggal_periksa='$tanggal'),0),
+                    IFNULL((select MAX(CONVERT(no_reg,signed)) from reg_periksa where kd_poli='$kd_poli' and kd_dokter='$kd_dokter' and tgl_registrasi='$tanggal'),0)
+                )+1";
+        $max    = intval(getOne2($sql));
+        if ($max < 1) {
+            $max = 1;
         }
-        return $no_reg;
+        return sprintf("%03s", $max);
     }
 
     function nextNoRawat($tanggal) {
@@ -170,14 +291,20 @@
         }
         $konektor = bukakoneksi();
         $tglSafe  = mysqli_real_escape_string($konektor, $tanggal);
-        $prefix   = str_replace('-', '/', $tglSafe) . '/';
-        $sql      = "SELECT IFNULL(MAX(CAST(SUBSTRING_INDEX(no_rawat, '/', -1) AS UNSIGNED)), 0) + 1 AS nxt 
-                     FROM reg_periksa 
-                     WHERE tgl_registrasi = '$tglSafe' 
-                       AND no_rawat LIKE '" . mysqli_real_escape_string($konektor, $prefix) . "%'";
+        $prefix   = mysqli_real_escape_string($konektor, str_replace('-', '/', $tglSafe) . '/');
+        // Sumber nomor = MAX(referensi_mobilejkn_bpjs, reg_periksa).
+        // - referensi_mobilejkn_bpjs tidak pernah dihapus barisnya, sehingga nomor bekas
+        //   pembatalan tidak dipakai ulang (nomor antrean tetap rapat/tidak loncat).
+        // - reg_periksa dipakai agar tidak bentrok dengan pendaftaran lokal/SIMRS.
+        $sql      = "SELECT GREATEST(
+                        IFNULL((SELECT MAX(CAST(SUBSTRING_INDEX(no_rawat, '/', -1) AS UNSIGNED)) FROM referensi_mobilejkn_bpjs WHERE tanggalperiksa = '$tglSafe' AND no_rawat LIKE '$prefix%'), 0),
+                        IFNULL((SELECT MAX(CAST(SUBSTRING_INDEX(no_rawat, '/', -1) AS UNSIGNED)) FROM reg_periksa WHERE tgl_registrasi = '$tglSafe' AND no_rawat LIKE '$prefix%'), 0)
+                     ) + 1 AS nxt";
         $res      = mysqli_query($konektor, $sql);
         $nxt      = 1;
-        if ($res && ($row = mysqli_fetch_assoc($res))) {
+        if ($res === false) {
+            mjknLog('SQL', sprintf('Error: %s | Query: %s', mysqli_error($konektor), mjknMaskSql($sql)));
+        } else if ($row = mysqli_fetch_assoc($res)) {
             $nxt = intval($row['nxt']);
             if ($nxt < 1) {
                 $nxt = 1;
@@ -200,7 +327,9 @@
                        AND nobooking LIKE '" . mysqli_real_escape_string($konektor, $prefix) . "%'";
         $res      = mysqli_query($konektor, $sql);
         $nxt      = 1;
-        if ($res && ($row = mysqli_fetch_assoc($res))) {
+        if ($res === false) {
+            mjknLog('SQL', sprintf('Error: %s | Query: %s', mysqli_error($konektor), mjknMaskSql($sql)));
+        } else if ($row = mysqli_fetch_assoc($res)) {
             $nxt = intval($row['nxt']);
             if ($nxt < 1) {
                 $nxt = 1;
@@ -441,8 +570,14 @@
     
     function cekpasien($nik,$nopeserta){
         $data=array();
-        $data= fetch_array(bukaquery("SELECT pasien.no_rkm_medis, pasien.no_ktp, pasien.no_peserta,namakeluarga,alamatpj,kelurahanpj,tgl_daftar,kecamatanpj,kabupatenpj,propinsipj,keluarga,TIMESTAMPDIFF(YEAR, pasien.tgl_lahir, CURDATE()) as tahun,(TIMESTAMPDIFF(MONTH, pasien.tgl_lahir, CURDATE()) - ((TIMESTAMPDIFF(MONTH, pasien.tgl_lahir, CURDATE()) div 12) * 12)) as bulan,
-                                      TIMESTAMPDIFF(DAY, DATE_ADD(DATE_ADD(pasien.tgl_lahir,INTERVAL TIMESTAMPDIFF(YEAR, pasien.tgl_lahir, CURDATE()) YEAR), INTERVAL TIMESTAMPDIFF(MONTH, pasien.tgl_lahir, CURDATE()) - ((TIMESTAMPDIFF(MONTH, pasien.tgl_lahir, CURDATE()) div 12) * 12) MONTH), CURDATE()) as hari FROM pasien where pasien.no_ktp='$nik' and pasien.no_peserta='$nopeserta'"));
+        $hasil = bukaquery2("SELECT pasien.no_rkm_medis, pasien.no_ktp, pasien.no_peserta,namakeluarga,alamatpj,kelurahanpj,tgl_daftar,kecamatanpj,kabupatenpj,propinsipj,keluarga,TIMESTAMPDIFF(YEAR, pasien.tgl_lahir, CURDATE()) as tahun,(TIMESTAMPDIFF(MONTH, pasien.tgl_lahir, CURDATE()) - ((TIMESTAMPDIFF(MONTH, pasien.tgl_lahir, CURDATE()) div 12) * 12)) as bulan,
+                                      TIMESTAMPDIFF(DAY, DATE_ADD(DATE_ADD(pasien.tgl_lahir,INTERVAL TIMESTAMPDIFF(YEAR, pasien.tgl_lahir, CURDATE()) YEAR), INTERVAL TIMESTAMPDIFF(MONTH, pasien.tgl_lahir, CURDATE()) - ((TIMESTAMPDIFF(MONTH, pasien.tgl_lahir, CURDATE()) div 12) * 12) MONTH), CURDATE()) as hari FROM pasien where pasien.no_ktp='$nik' and pasien.no_peserta='$nopeserta'");
+        if ($hasil) {
+            $row = fetch_array($hasil);
+            if ($row) {
+                $data = $row;
+            }
+        }
         return $data;
     }
     

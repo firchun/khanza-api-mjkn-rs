@@ -499,10 +499,10 @@ if (!empty($url[0])) {
                                                 $response = array(
                                                     'metadata' => array(
                                                         'message' =>  'Data pasien ini tidak ditemukan',
-                                                        'code' => 202
+                                                        'code' => 201
                                                     )
                                                 );
-                                                http_response_code(202);
+                                                http_response_code(201);
                                             } else {
                                                 /*if(empty($decode['norm'])) { 
                                                         $response = array(
@@ -523,14 +523,15 @@ if (!empty($url[0])) {
                                                     http_response_code(201);
                                                 } else {
                                                     $sudahdaftar = getOne2("select count(reg_periksa.no_rawat) from reg_periksa inner join pasien on reg_periksa.no_rkm_medis=pasien.no_rkm_medis where reg_periksa.kd_poli='$kdpoli' and reg_periksa.kd_dokter='$kddokter' and reg_periksa.tgl_registrasi='" . validTeks4($decode['tanggalperiksa'], 20) . "' and pasien.no_peserta='" . validTeks4($decode['nomorkartu'], 20) . "' ");
-                                                    if ($sudahdaftar > 0) {
-                                                        $response = array(
-                                                            'metadata' => array(
-                                                                'message' =>  "Nomor Antrean hanya dapat diambil 1 kali pada Tanggal, Dokter dan Poli yang sama",
-                                                                'code' => 201
-                                                            )
-                                                        );
-                                                    } else {
+                                                     if ($sudahdaftar > 0) {
+                                                         $response = array(
+                                                             'metadata' => array(
+                                                                 'message' =>  "Nomor Antrean hanya dapat diambil 1 kali pada Tanggal, Dokter dan Poli yang sama",
+                                                                 'code' => 201
+                                                             )
+                                                         );
+                                                         http_response_code(201);
+                                                     } else {
                                                         $sekarang  = date("Y-m-d");
                                                         $interval  = getOne2("select (TO_DAYS('" . validTeks4($decode["tanggalperiksa"], 20) . "')-TO_DAYS('$sekarang'))");
                                                         if ($interval < 0) {
@@ -544,13 +545,14 @@ if (!empty($url[0])) {
                                                         } else {
                                                             $sisakuota = getOne2("select count(no_rawat) from reg_periksa where kd_poli='$kdpoli' and kd_dokter='$kddokter' and tgl_registrasi='" . validTeks4($decode['tanggalperiksa'], 20) . "' ");
                                                             if ($sisakuota < $jadwal['kuota']) {
-                                                                $noReg           = noRegPoli($kdpoli, $kddokter, validTeks4($decode['tanggalperiksa'], 20));
-                                                                $no_rawat        = str_replace("-", "/", validTeks4($decode['tanggalperiksa'], 20) . "/") . nextNoRawat(validTeks4($decode['tanggalperiksa'], 20));
-                                                                $nobooking       = nextNoBooking(validTeks4($decode['tanggalperiksa'], 20));
+                                                                $tanggalperiksa  = validTeks4($decode['tanggalperiksa'], 20);
+                                                                $noReg           = noRegPoli($kdpoli, $kddokter, $tanggalperiksa);
                                                                 $statuspoli      = getOne2("select if((select count(no_rkm_medis) from reg_periksa where no_rkm_medis='$datapeserta[no_rkm_medis]' and kd_poli='$kdpoli')>0,'Lama','Baru' )");
                                                                 $dilayani        = $noReg * $waktutunggu;
                                                                 $statusdaftar    = $datapeserta['tgl_daftar'] == $decode['tanggalperiksa'] ? "1" : "0";
 
+                                                                $umur            = 0;
+                                                                $sttsumur        = "Hr";
                                                                 if ($datapeserta["tahun"] > 0) {
                                                                     $umur       = $datapeserta["tahun"];
                                                                     $sttsumur   = "Th";
@@ -576,10 +578,66 @@ if (!empty($url[0])) {
                                                                     $jeniskunjungan = "4 (Rujukan Antar RS)";
                                                                 }
 
-                                                                $querybooking = bukaquery2("insert into referensi_mobilejkn_bpjs values('$nobooking','$no_rawat', '" . validTeks4($decode['nomorkartu'], 20) . "', '" . validTeks4($decode['nik'], 20) . "','" . validTeks4($decode['nohp'], 20) . "','" . validTeks4($decode['kodepoli'], 20) . "','$statusdaftar','$datapeserta[no_rkm_medis]','" . validTeks4($decode['tanggalperiksa'], 20) . "','" . validTeks4($decode['kodedokter'], 20) . "','" . validTeks4($decode['jampraktek'], 20) . "','" . $jeniskunjungan . "','" . validTeks4($decode['nomorreferensi'], 30) . "','" . $kdpoli . "-" . $noReg . "','$noReg','" . (strtotime(validTeks4($decode['tanggalperiksa'], 20) . ' ' . $jadwal['jam_mulai'] . '+' . $dilayani . ' minute') * 1000) . "','" . ($jadwal['kuota'] - $sisakuota - 1) . "','$jadwal[kuota]','" . ($jadwal['kuota'] - $sisakuota - 1) . "','$jadwal[kuota]','Belum','0000-00-00 00:00:00','Belum')");
-                                                                if ($querybooking) {
-                                                                    $query = bukaquery2("insert into reg_periksa values('$noReg', '$no_rawat', '" . validTeks4($decode['tanggalperiksa'], 20) . "','" . $jadwal['jam_mulai'] . "', '$kddokter', '$datapeserta[no_rkm_medis]', '$kdpoli', '$datapeserta[namakeluarga]', '$datapeserta[alamatpj], $datapeserta[kelurahanpj], $datapeserta[kecamatanpj], $datapeserta[kabupatenpj], $datapeserta[propinsipj]', '$datapeserta[keluarga]', '" . getOne2("select registrasilama from poliklinik where kd_poli='$kdpoli'") . "', 'Belum','" . str_replace("0", "Lama", str_replace("1", "Baru", $statusdaftar)) . "','Ralan', '" . CARABAYAR . "', '$umur','$sttsumur','Belum Bayar', '$statuspoli')");
-                                                                    if ($query) {
+                                                                // Nilai dari tabel pasien di-escape agar kutip/tanda khusus tidak memutus query reg_periksa
+                                                                $nmkeluarga      = escape((string)$datapeserta['namakeluarga']);
+                                                                $alamatpj        = escape((string)$datapeserta['alamatpj'] . ', ' . $datapeserta['kelurahanpj'] . ', ' . $datapeserta['kecamatanpj'] . ', ' . $datapeserta['kabupatenpj'] . ', ' . $datapeserta['propinsipj']);
+                                                                $keluarga        = escape((string)$datapeserta['keluarga']);
+                                                                $norm            = escape((string)$datapeserta['no_rkm_medis']);
+                                                                $registrasi      = getOne2("select registrasilama from poliklinik where kd_poli='$kdpoli'");
+                                                                $statusbaru      = str_replace("0", "Lama", str_replace("1", "Baru", $statusdaftar));
+
+                                                                // Kunci alokasi nomor + transaksi: referensi_mobilejkn_bpjs dan reg_periksa harus sukses bersama
+                                                                $lockname        = "mjkn_antrean:" . $tanggalperiksa;
+                                                                if ((int)ambilLock($lockname, 5) !== 1) {
+                                                                    $response = array(
+                                                                        'metadata' => array(
+                                                                            'message' => 'Server sedang sibuk, silahkan coba beberapa saat lagi',
+                                                                            'code' => 201
+                                                                        )
+                                                                    );
+                                                                    http_response_code(201);
+                                                                } else {
+                                                                    $sukses = false;
+                                                                    for ($attempt = 0; $attempt < 3; $attempt++) {
+                                                                        $no_rawat  = str_replace("-", "/", $tanggalperiksa) . "/" . nextNoRawat($tanggalperiksa);
+                                                                        $nobooking = nextNoBooking($tanggalperiksa);
+                                                                        $refInserted = false;
+                                                                        try {
+                                                                            mulaiTransaksi();
+                                                                            $insRef = bukaquery2("insert into referensi_mobilejkn_bpjs values('$nobooking','$no_rawat', '" . validTeks4($decode['nomorkartu'], 20) . "', '" . validTeks4($decode['nik'], 20) . "','" . validTeks4($decode['nohp'], 20) . "','" . validTeks4($decode['kodepoli'], 20) . "','$statusdaftar','$norm','" . $tanggalperiksa . "','" . validTeks4($decode['kodedokter'], 20) . "','" . validTeks4($decode['jampraktek'], 20) . "','" . $jeniskunjungan . "','" . validTeks4($decode['nomorreferensi'], 30) . "','" . $kdpoli . "-" . $noReg . "','$noReg','" . (strtotime($tanggalperiksa . ' ' . $jadwal['jam_mulai'] . '+' . $dilayani . ' minute') * 1000) . "','" . ($jadwal['kuota'] - $sisakuota - 1) . "','$jadwal[kuota]','" . ($jadwal['kuota'] - $sisakuota - 1) . "','$jadwal[kuota]','Belum','0000-00-00 00:00:00','Belum')");
+                                                                            if ($insRef === false) {
+                                                                                throw new RuntimeException('insert referensi_mobilejkn_bpjs gagal');
+                                                                            }
+                                                                            $refInserted = true;
+                                                                            $insReg = bukaquery2("insert into reg_periksa values('$noReg', '$no_rawat', '$tanggalperiksa','" . $jadwal['jam_mulai'] . "', '$kddokter', '$norm', '$kdpoli', '$nmkeluarga', '$alamatpj', '$keluarga', '$registrasi', 'Belum','$statusbaru','Ralan', '" . CARABAYAR . "', '$umur','$sttsumur','Belum Bayar', '$statuspoli')");
+                                                                            if ($insReg === false) {
+                                                                                throw new RuntimeException('insert reg_periksa gagal');
+                                                                            }
+                                                                            if (commitTransaksi() === false) {
+                                                                                throw new RuntimeException('commit transaksi gagal');
+                                                                            }
+                                                                            $sukses = true;
+                                                                            break;
+                                                                        } catch (Throwable $e) {
+                                                                            $errno = errnoTerakhir();
+                                                                            mjknLog('ANTREAN', sprintf(
+                                                                                'gagal simpan antrean no_rawat=%s nobooking=%s errno=%s error=%s | %s',
+                                                                                $no_rawat, $nobooking, $errno, mysqli_error(bukakoneksi()), $e->getMessage()
+                                                                            ));
+                                                                            if ($refInserted) {
+                                                                                if (bukaquery2("delete from referensi_mobilejkn_bpjs where nobooking='$nobooking'") === false) {
+                                                                                    mjknLog('ANTREAN', sprintf('GAGAL hapus referensi kompensasi nobooking=%s', $nobooking));
+                                                                                }
+                                                                            }
+                                                                            rollbackTransaksi();
+                                                                            if ($errno != 1062) {
+                                                                                break;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                    lepasLock($lockname);
+
+                                                                    if ($sukses) {
                                                                         $response = array(
                                                                             'response' => array(
                                                                                 'nomorantrean' => $kdpoli . "-" . $noReg,
@@ -589,7 +647,7 @@ if (!empty($url[0])) {
                                                                                 'norm' => $datapeserta['no_rkm_medis'],
                                                                                 'namapoli' => $jadwal['nm_poli'],
                                                                                 'namadokter' => $jadwal['nm_dokter'],
-                                                                                'estimasidilayani' => strtotime($decode['tanggalperiksa'] . " " . $jadwal['jam_mulai'] . '+' . $dilayani . ' minute') * 1000,
+                                                                                'estimasidilayani' => strtotime($tanggalperiksa . " " . $jadwal['jam_mulai'] . '+' . $dilayani . ' minute') * 1000,
                                                                                 'sisakuotajkn' => intval($jadwal['kuota'] - $sisakuota - 1),
                                                                                 'kuotajkn' => intval($jadwal['kuota']),
                                                                                 'sisakuotanonjkn' => intval($jadwal['kuota'] - $sisakuota - 1),
@@ -601,54 +659,20 @@ if (!empty($url[0])) {
                                                                                 'code' => 200
                                                                             )
                                                                         );
-
                                                                         http_response_code(200);
-                                                                    } else {
-                                                                        $no_rawat        = str_replace("-", "/", validTeks4($decode['tanggalperiksa'], 20) . "/") . nextNoRawat(validTeks4($decode['tanggalperiksa'], 20));
-                                                                        $query = bukaquery2("insert into reg_periksa values('$noReg', '$no_rawat', '" . validTeks4($decode['tanggalperiksa'], 20) . "','" . $jadwal['jam_mulai'] . "', '$kddokter', '$datapeserta[no_rkm_medis]', '$kdpoli', '$datapeserta[namakeluarga]', '$datapeserta[alamatpj], $datapeserta[kelurahanpj], $datapeserta[kecamatanpj], $datapeserta[kabupatenpj], $datapeserta[propinsipj]', '$datapeserta[keluarga]', '" . getOne2("select registrasilama from poliklinik where kd_poli='$kdpoli'") . "', 'Belum','" . str_replace("0", "Lama", str_replace("1", "Baru", $statusdaftar)) . "','Ralan', '" . CARABAYAR . "', '$umur','$sttsumur','Belum Bayar', '$statuspoli')");
-                                                                        if ($query) {
-                                                                            $response = array(
-                                                                                'response' => array(
-                                                                                    'nomorantrean' => $kdpoli . "-" . $noReg,
-                                                                                    'angkaantrean' => intval($noReg),
-                                                                                    'kodebooking' => $nobooking,
-                                                                                    'pasienbaru' => 0,
-                                                                                    'norm' => $datapeserta['no_rkm_medis'],
-                                                                                    'namapoli' => $jadwal['nm_poli'],
-                                                                                    'namadokter' => $jadwal['nm_dokter'],
-                                                                                    'estimasidilayani' => strtotime($decode['tanggalperiksa'] . " " . $jadwal['jam_mulai'] . '+' . $dilayani . ' minute') * 1000,
-                                                                                    'sisakuotajkn' => intval($jadwal['kuota'] - $sisakuota - 1),
-                                                                                    'kuotajkn' => intval($jadwal['kuota']),
-                                                                                    'sisakuotanonjkn' => intval($jadwal['kuota'] - $sisakuota - 1),
-                                                                                    'kuotanonjkn' => intval($jadwal['kuota']),
-                                                                                    'keterangan' => 'Peserta harap 30 menit lebih awal guna pencatatan administrasi.'
-                                                                                ),
-                                                                                'metadata' => array(
-                                                                                    'message' => 'Ok',
-                                                                                    'code' => 200
-                                                                                )
-                                                                            );
-
-                                                                            http_response_code(200);
-                                                                        } else {
-                                                                            $update = bukaquery2("update referensi_mobilejkn_bpjs set status='Gagal',validasi=now() where nobooking='$nobooking'");
-                                                                            $response = array(
-                                                                                'metadata' => array(
-                                                                                    'message' => "Maaf terjadi kesalahan,terjadi duplikasi data silahkan hubungi Admnistrator..",
-                                                                                    'code' => 401
-                                                                                )
-                                                                            );
-                                                                            http_response_code(401);
+                                                                        $ms = round((microtime(true) - $request_start) * 1000, 2);
+                                                                        if ($ms > 3000) {
+                                                                            error_log("[ambilantrean] lambat {$ms}ms nobooking=$nobooking poli=$kdpoli");
                                                                         }
-                                                                    }
-                                                                } else {
-                                                                    $response = array(
-                                                                        'metadata' => array(
+                                                                    } else {
+                                                                        $response = array(
+                                                                            'metadata' => array(
                                                                             'message' => "Maaf terjadi kesalahan, hubungi Admnistrator..",
-                                                                            'code' => 401
+                                                                            'code' => 201
                                                                         )
                                                                     );
-                                                                    http_response_code(401);
+                                                                    http_response_code(201);
+                                                                    }
                                                                 }
                                                             } else {
                                                                 $response = array(
@@ -749,6 +773,14 @@ if (!empty($url[0])) {
                                                 )
                                             );
                                             http_response_code(201);
+                                        } else if ($booking['status'] == 'Gagal') {
+                                            $response = array(
+                                                'metadata' => array(
+                                                    'message' => 'No.Booking Anda Bermasalah, Hubungi Admnistrator..',
+                                                    'code' => 201
+                                                )
+                                            );
+                                            http_response_code(201);
                                         } else if ($booking['status'] == 'Belum') {
                                             $interval  = getOne2("select TIMESTAMPDIFF(MINUTE,'$booking[tanggalperiksa] $booking[jampraktek]:00','$tanggalchekcin') AS difference");
                                             if ($interval >= 60) {
@@ -782,10 +814,10 @@ if (!empty($url[0])) {
                                                     $response = array(
                                                         'metadata' => array(
                                                             'message' => "Maaf terjadi kesalahan, hubungi Admnistrator..",
-                                                            'code' => 401
+                                                            'code' => 201
                                                         )
                                                     );
-                                                    http_response_code(401);
+                                                    http_response_code(201);
                                                 }
                                             }
                                         }
@@ -864,14 +896,22 @@ if (!empty($url[0])) {
                                                 )
                                             );
                                             http_response_code(201);
-                                        } else if ($booking['status'] == 'Checkin') {
-                                            $response = array(
-                                                'metadata' => array(
-                                                    'message' => 'Anda Sudah Checkin Pada Tanggal ' . $booking['validasi'] . ', Pendaftaran Tidak Bisa Dibatalkan',
-                                                    'code' => 201
-                                                )
-                                            );
-                                            http_response_code(201);
+                                         } else if ($booking['status'] == 'Checkin') {
+                                             $response = array(
+                                                 'metadata' => array(
+                                                     'message' => 'Anda Sudah Checkin Pada Tanggal ' . $booking['validasi'] . ', Pendaftaran Tidak Bisa Dibatalkan',
+                                                     'code' => 201
+                                                 )
+                                             );
+                                             http_response_code(201);
+                                         } else if ($booking['status'] == 'Gagal') {
+                                             $response = array(
+                                                 'metadata' => array(
+                                                     'message' => 'No.Booking Anda Bermasalah, Hubungi Admnistrator..',
+                                                     'code' => 201
+                                                 )
+                                             );
+                                             http_response_code(201);
                                         } else if ($booking['status'] == 'Belum') {
                                             $update        = bukaquery2("update referensi_mobilejkn_bpjs set status='Batal',validasi=now() where nobooking='" . validTeks4($decode['kodebooking'], 25) . "'");
                                             $batal         = bukaquery2("delete from reg_periksa where no_rawat='" . $booking['no_rawat'] . "'");
@@ -937,14 +977,22 @@ if (!empty($url[0])) {
                                         );
                                         http_response_code(201);
                                     } else {
-                                        if ($booking['status'] == 'Batal') {
-                                            $response = array(
-                                                'metadata' => array(
-                                                    'message' => 'Data booking sudah dibatalkan',
-                                                    'code' => 201
-                                                )
-                                            );
-                                            http_response_code(201);
+                                         if ($booking['status'] == 'Batal') {
+                                             $response = array(
+                                                 'metadata' => array(
+                                                     'message' => 'Data booking sudah dibatalkan',
+                                                     'code' => 201
+                                                 )
+                                             );
+                                             http_response_code(201);
+                                         } else if ($booking['status'] == 'Gagal') {
+                                             $response = array(
+                                                 'metadata' => array(
+                                                     'message' => 'No.Booking Anda Bermasalah, Hubungi Admnistrator..',
+                                                     'code' => 201
+                                                 )
+                                             );
+                                             http_response_code(201);
                                         } else {
                                             /*single poli
                                                 $kodedokter = getOne2("select kd_dokter from maping_dokter_dpjpvclaim where kd_dokter_bpjs='$booking[kodedokter]'");
@@ -965,13 +1013,22 @@ if (!empty($url[0])) {
                                             $kodedokter = getOne2("select kd_dokter from maping_dokter_dpjpvclaim where kd_dokter_bpjs='$booking[kodedokter]'");
                                             $kodepoli   = getOne2("SELECT maping_poli_bpjs.kd_poli_rs FROM maping_poli_bpjs inner join jadwal on maping_poli_bpjs.kd_poli_rs=jadwal.kd_poli WHERE maping_poli_bpjs.kd_poli_bpjs='$booking[kodepoli]' and jadwal.kd_dokter='$kodedokter' and jadwal.hari_kerja='$hari' and jadwal.jam_mulai='$jammulai:00' and jadwal.jam_selesai='$jamselesai:00' ");
                                             $noreg      = getOne2("select no_reg from reg_periksa where no_rawat='$booking[no_rawat]'");
-                                            $data = fetch_array(bukaquery("SELECT reg_periksa.kd_poli,poliklinik.nm_poli,dokter.nm_dokter,
-                                                    reg_periksa.no_reg,COUNT(reg_periksa.no_rawat) as total_antrean,
-                                                    IFNULL(SUM(CASE WHEN reg_periksa.stts ='Belum' THEN 1 ELSE 0 END),0) as sisa_antrean
-                                                    FROM reg_periksa INNER JOIN poliklinik ON poliklinik.kd_poli=reg_periksa.kd_poli
-                                                    INNER JOIN dokter ON dokter.kd_dokter=reg_periksa.kd_dokter
-                                                    WHERE reg_periksa.kd_dokter='$kodedokter' and reg_periksa.kd_poli='$kodepoli'and reg_periksa.tgl_registrasi='$booking[tanggalperiksa]' 
-                                                    and CONVERT(RIGHT(reg_periksa.no_reg,3),signed)<CONVERT(RIGHT($noreg,3),signed)"));
+                                            if (empty($noreg)) {
+                                                $response = array(
+                                                    'metadata' => array(
+                                                        'message' => 'Antrean Tidak Ditemukan !',
+                                                        'code' => 201
+                                                    )
+                                                );
+                                                http_response_code(201);
+                                            } else {
+                                                $data = fetch_array(bukaquery("SELECT reg_periksa.kd_poli,poliklinik.nm_poli,dokter.nm_dokter,
+                                                        reg_periksa.no_reg,COUNT(reg_periksa.no_rawat) as total_antrean,
+                                                        IFNULL(SUM(CASE WHEN reg_periksa.stts ='Belum' THEN 1 ELSE 0 END),0) as sisa_antrean
+                                                        FROM reg_periksa INNER JOIN poliklinik ON poliklinik.kd_poli=reg_periksa.kd_poli
+                                                        INNER JOIN dokter ON dokter.kd_dokter=reg_periksa.kd_dokter
+                                                        WHERE reg_periksa.kd_dokter='$kodedokter' and reg_periksa.kd_poli='$kodepoli'and reg_periksa.tgl_registrasi='$booking[tanggalperiksa]' 
+                                                        and CONVERT(RIGHT(reg_periksa.no_reg,3),signed)<CONVERT(RIGHT($noreg,3),signed)"));
 
                                             if ($data['nm_poli'] != '') {
                                                 $response = array(
@@ -998,6 +1055,7 @@ if (!empty($url[0])) {
                                                     )
                                                 );
                                                 http_response_code(201);
+                                            }
                                             }
                                         }
                                     }
