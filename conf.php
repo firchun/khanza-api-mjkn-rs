@@ -15,6 +15,44 @@
     // agar penanganan error 201/500 di bawah konsisten di semua versi PHP (8.1+ default STRICT).
     mysqli_report(MYSQLI_REPORT_OFF);
 
+    // Simple cache (APCu-first, fallback file untuk dev/local non-APCu)
+    function mjknCacheGet($key) {
+        if (function_exists('apcu_fetch')) {
+            $success = false;
+            $value   = apcu_fetch($key, $success);
+            return $success ? $value : null;
+        }
+        $file = sys_get_temp_dir() . '/mjkn_cache_' . md5($key) . '.json';
+        if (file_exists($file) && (time() - filemtime($file)) < 3600) {
+            $json = @file_get_contents($file);
+            if ($json !== false) {
+                $data = json_decode($json, true);
+                return (json_last_error() === JSON_ERROR_NONE) ? $data : null;
+            }
+        }
+        return null;
+    }
+
+    function mjknCacheSet($key, $value, $ttl = 300) {
+        if (function_exists('apcu_store')) {
+            return @apcu_store($key, $value, $ttl);
+        }
+        $file = sys_get_temp_dir() . '/mjkn_cache_' . md5($key) . '.json';
+        @file_put_contents($file, json_encode($value, JSON_UNESCAPED_UNICODE));
+        return true;
+    }
+
+    function mjknCacheDelete($key) {
+        if (function_exists('apcu_delete')) {
+            return @apcu_delete($key);
+        }
+        $file = sys_get_temp_dir() . '/mjkn_cache_' . md5($key) . '.json';
+        if (file_exists($file)) {
+            @unlink($file);
+        }
+        return true;
+    }
+
     function mjknMaskSql($sql) {
         $sql = (string) $sql;
         if (strlen($sql) > 2000) {
@@ -96,10 +134,21 @@
     define('DB_PASS', getenv('DB_PASS') !== false ? getenv('DB_PASS') : '');
     define('DB_NAME', getenv('DB_NAME') !== false ? getenv('DB_NAME') : '');
     define('APP_URL', getenv('APP_URL') !== false ? rtrim(getenv('APP_URL'), '/') : '');
-    $akunbpjs=fetch_array(bukaquery("select kd_pj,aes_decrypt(usere,'nur') as user,aes_decrypt(passworde,'windi') as pass FROM password_asuransi"));
-    @define('USERNAME', $akunbpjs['user']);
-    @define('PASSWORD', $akunbpjs['pass']);
-    @define('CARABAYAR', $akunbpjs['kd_pj']);
+    // Cache kredensial BPJS untuk mengurangi 1 query/request
+    $akunbpjsCacheKey = 'mjkn:akunbpjs';
+    $akunbpjsCached   = mjknCacheGet($akunbpjsCacheKey);
+    if ($akunbpjsCached === null) {
+        $akunbpjs       = fetch_array(bukaquery("select kd_pj,aes_decrypt(usere,'nur') as user,aes_decrypt(passworde,'windi') as pass FROM password_asuransi"));
+        $akunbpjsCached = array(
+            'user' => $akunbpjs['user'],
+            'pass' => $akunbpjs['pass'],
+            'kd_pj' => $akunbpjs['kd_pj']
+        );
+        mjknCacheSet($akunbpjsCacheKey, $akunbpjsCached, 600);
+    }
+    @define('USERNAME', $akunbpjsCached['user']);
+    @define('PASSWORD', $akunbpjsCached['pass']);
+    @define('CARABAYAR', $akunbpjsCached['kd_pj']);
 
     function bukakoneksi() {
         if (isset($GLOBALS['__mjkn_conn']) && $GLOBALS['__mjkn_conn'] instanceof mysqli && !$GLOBALS['__mjkn_conn']->connect_errno) {
@@ -569,6 +618,11 @@
     }
     
     function cekpasien($nik,$nopeserta){
+        $cacheKey = 'mjkn:pasien:' . md5((string)$nik . '|' . (string)$nopeserta);
+        $cached   = mjknCacheGet($cacheKey);
+        if ($cached !== null) {
+            return $cached;
+        }
         $data=array();
         $hasil = bukaquery2("SELECT pasien.no_rkm_medis, pasien.no_ktp, pasien.no_peserta,namakeluarga,alamatpj,kelurahanpj,tgl_daftar,kecamatanpj,kabupatenpj,propinsipj,keluarga,TIMESTAMPDIFF(YEAR, pasien.tgl_lahir, CURDATE()) as tahun,(TIMESTAMPDIFF(MONTH, pasien.tgl_lahir, CURDATE()) - ((TIMESTAMPDIFF(MONTH, pasien.tgl_lahir, CURDATE()) div 12) * 12)) as bulan,
                                       TIMESTAMPDIFF(DAY, DATE_ADD(DATE_ADD(pasien.tgl_lahir,INTERVAL TIMESTAMPDIFF(YEAR, pasien.tgl_lahir, CURDATE()) YEAR), INTERVAL TIMESTAMPDIFF(MONTH, pasien.tgl_lahir, CURDATE()) - ((TIMESTAMPDIFF(MONTH, pasien.tgl_lahir, CURDATE()) div 12) * 12) MONTH), CURDATE()) as hari FROM pasien where pasien.no_ktp='$nik' and pasien.no_peserta='$nopeserta'");
@@ -578,6 +632,7 @@
                 $data = $row;
             }
         }
+        mjknCacheSet($cacheKey, $data, 600);
         return $data;
     }
     

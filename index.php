@@ -446,7 +446,14 @@ if (!empty($url[0])) {
                                 } else {
                                     $jammulai   = validTeks4(substr($decode['jampraktek'], 0, 5), 20);
                                     $jamselesai = validTeks4(substr($decode['jampraktek'], 6, 5), 20);
-                                    $kddokter   = getOne2("SELECT kd_dokter FROM maping_dokter_dpjpvclaim WHERE kd_dokter_bpjs='" . validTeks4($decode['kodedokter'], 20) . "'");
+                                    $kddokterBpjs = validTeks4($decode['kodedokter'], 20);
+                                    $kdpoliBpjs   = validTeks4($decode['kodepoli'], 20);
+                                    $kddokterKey  = 'mjkn:map_dokter:' . $kddokterBpjs;
+                                    $kddokter     = mjknCacheGet($kddokterKey);
+                                    if ($kddokter === null) {
+                                        $kddokter = getOne2("SELECT kd_dokter FROM maping_dokter_dpjpvclaim WHERE kd_dokter_bpjs='" . $kddokterBpjs . "'");
+                                        mjknCacheSet($kddokterKey, $kddokter, 900);
+                                    }
                                     $hari       = strtoupper(hariindo(validTeks4($decode['tanggalperiksa'], 20)));
                                     //single poli
                                     //$kdpoli     = getOne2("SELECT kd_poli_rs FROM maping_poli_bpjs WHERE kd_poli_bpjs='".validTeks($decode["kodepoli"])."'");
@@ -455,7 +462,12 @@ if (!empty($url[0])) {
                                     // with jam 
                                     // $kdpoli     = getOne2("SELECT maping_poli_bpjs.kd_poli_rs FROM maping_poli_bpjs inner join jadwal on maping_poli_bpjs.kd_poli_rs=jadwal.kd_poli WHERE maping_poli_bpjs.kd_poli_bpjs='" . validTeks4($decode['kodepoli'], 20) . "' and jadwal.kd_dokter='$kddokter' and jadwal.hari_kerja='$hari' and jadwal.jam_mulai='$jammulai:00' and jadwal.jam_selesai='$jamselesai:00' ");
                                     // without jam 
-                                    $kdpoli     = getOne2("SELECT maping_poli_bpjs.kd_poli_rs FROM maping_poli_bpjs inner join jadwal on maping_poli_bpjs.kd_poli_rs=jadwal.kd_poli WHERE maping_poli_bpjs.kd_poli_bpjs='" . validTeks4($decode['kodepoli'], 20) . "' and jadwal.kd_dokter='$kddokter' and jadwal.hari_kerja='$hari'");
+                                    $kdpoliKey = 'mjkn:map_poli_jadwal:' . md5($kdpoliBpjs . '|' . $kddokter . '|' . $hari);
+                                    $kdpoli    = mjknCacheGet($kdpoliKey);
+                                    if ($kdpoli === null) {
+                                        $kdpoli     = getOne2("SELECT maping_poli_bpjs.kd_poli_rs FROM maping_poli_bpjs inner join jadwal on maping_poli_bpjs.kd_poli_rs=jadwal.kd_poli WHERE maping_poli_bpjs.kd_poli_bpjs='" . $kdpoliBpjs . "' and jadwal.kd_dokter='$kddokter' and jadwal.hari_kerja='$hari'");
+                                        mjknCacheSet($kdpoliKey, $kdpoli, 900);
+                                    }
                                    
                                     if (empty($kdpoli)) {
                                         $response = array(
@@ -522,8 +534,15 @@ if (!empty($url[0])) {
                                                     );
                                                     http_response_code(201);
                                                 } else {
-                                                    $sudahdaftar = getOne2("select count(reg_periksa.no_rawat) from reg_periksa inner join pasien on reg_periksa.no_rkm_medis=pasien.no_rkm_medis where reg_periksa.kd_poli='$kdpoli' and reg_periksa.kd_dokter='$kddokter' and reg_periksa.tgl_registrasi='" . validTeks4($decode['tanggalperiksa'], 20) . "' and pasien.no_peserta='" . validTeks4($decode['nomorkartu'], 20) . "' ");
-                                                     if ($sudahdaftar > 0) {
+                                                 $tglDaftarParam = validTeks4($decode['tanggalperiksa'], 20);
+                                                 $noKartuParam   = validTeks4($decode['nomorkartu'], 20);
+                                                 $cacheSdh       = 'mjkn:sudahdaftar:' . md5($kdpoli . '|' . $kddokter . '|' . $tglDaftarParam . '|' . $noKartuParam);
+                                                 $sudahdaftar    = mjknCacheGet($cacheSdh);
+                                                 if ($sudahdaftar === null) {
+                                                     $sudahdaftar = getOne2("select count(reg_periksa.no_rawat) from reg_periksa inner join pasien on reg_periksa.no_rkm_medis=pasien.no_rkm_medis where reg_periksa.kd_poli='$kdpoli' and reg_periksa.kd_dokter='$kddokter' and reg_periksa.tgl_registrasi='" . $tglDaftarParam . "' and pasien.no_peserta='" . $noKartuParam . "' ");
+                                                     mjknCacheSet($cacheSdh, $sudahdaftar, 5);
+                                                 }
+                                                      if ($sudahdaftar > 0) {
                                                          $response = array(
                                                              'metadata' => array(
                                                                  'message' =>  "Nomor Antrean hanya dapat diambil 1 kali pada Tanggal, Dokter dan Poli yang sama",
@@ -543,11 +562,21 @@ if (!empty($url[0])) {
                                                             );
                                                             http_response_code(201);
                                                         } else {
-                                                            $sisakuota = getOne2("select count(no_rawat) from reg_periksa where kd_poli='$kdpoli' and kd_dokter='$kddokter' and tgl_registrasi='" . validTeks4($decode['tanggalperiksa'], 20) . "' ");
-                                                            if ($sisakuota < $jadwal['kuota']) {
+                                                             $cacheKuota = 'mjkn:kuota:' . md5($kdpoli . '|' . $kddokter . '|' . $tglDaftarParam);
+                                                             $sisakuota  = mjknCacheGet($cacheKuota);
+                                                             if ($sisakuota === null) {
+                                                                 $sisakuota = getOne2("select count(no_rawat) from reg_periksa where kd_poli='$kdpoli' and kd_dokter='$kddokter' and tgl_registrasi='" . $tglDaftarParam . "' ");
+                                                                 mjknCacheSet($cacheKuota, $sisakuota, 5);
+                                                             }
+                                                             if ($sisakuota < $jadwal['kuota']) {
                                                                 $tanggalperiksa  = validTeks4($decode['tanggalperiksa'], 20);
                                                                 $noReg           = noRegPoli($kdpoli, $kddokter, $tanggalperiksa);
-                                                                $statuspoli      = getOne2("select if((select count(no_rkm_medis) from reg_periksa where no_rkm_medis='$datapeserta[no_rkm_medis]' and kd_poli='$kdpoli')>0,'Lama','Baru' )");
+                                                                 $cacheStatPoli   = 'mjkn:statpoli:' . md5($datapeserta['no_rkm_medis'] . '|' . $kdpoli);
+                                                                 $statuspoli      = mjknCacheGet($cacheStatPoli);
+                                                                 if ($statuspoli === null) {
+                                                                     $statuspoli = getOne2("select if((select count(no_rkm_medis) from reg_periksa where no_rkm_medis='$datapeserta[no_rkm_medis]' and kd_poli='$kdpoli')>0,'Lama','Baru' )");
+                                                                     mjknCacheSet($cacheStatPoli, $statuspoli, 300);
+                                                                 }
                                                                 $dilayani        = $noReg * $waktutunggu;
                                                                 $statusdaftar    = $datapeserta['tgl_daftar'] == $decode['tanggalperiksa'] ? "1" : "0";
 
@@ -583,7 +612,12 @@ if (!empty($url[0])) {
                                                                 $alamatpj        = escape((string)$datapeserta['alamatpj'] . ', ' . $datapeserta['kelurahanpj'] . ', ' . $datapeserta['kecamatanpj'] . ', ' . $datapeserta['kabupatenpj'] . ', ' . $datapeserta['propinsipj']);
                                                                 $keluarga        = escape((string)$datapeserta['keluarga']);
                                                                 $norm            = escape((string)$datapeserta['no_rkm_medis']);
-                                                                $registrasi      = getOne2("select registrasilama from poliklinik where kd_poli='$kdpoli'");
+                                                                $registrasiKey   = 'mjkn:poli_reg:' . $kdpoli;
+                                    $registrasi      = mjknCacheGet($registrasiKey);
+                                    if ($registrasi === null) {
+                                        $registrasi = getOne2("select registrasilama from poliklinik where kd_poli='$kdpoli'");
+                                        mjknCacheSet($registrasiKey, $registrasi, 900);
+                                    }
                                                                 $statusbaru      = str_replace("0", "Lama", str_replace("1", "Baru", $statusdaftar));
 
                                                                 // Kunci alokasi nomor + transaksi: referensi_mobilejkn_bpjs dan reg_periksa harus sukses bersama
