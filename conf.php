@@ -75,6 +75,19 @@
         return in_array((int) mysqli_errno($konektor), array(2006, 2013), true);
     }
 
+    // Instrumentasi ringan: hitung waktu connect, jumlah query, dan total waktu query
+    // per request. Dipakai untuk menemukan sumber lambat (connect / query / jaringan).
+    $GLOBALS['__mjkn_request_start'] = isset($GLOBALS['__mjkn_request_start']) ? $GLOBALS['__mjkn_request_start'] : microtime(true);
+    $GLOBALS['__mjkn_t'] = array('connect_ms' => 0.0, 'query_ms' => 0.0, 'queries' => 0, 'connects' => 0);
+
+    function mjknQuery($konektor, $sql) {
+        $t0     = microtime(true);
+        $result = mysqli_query($konektor, $sql);
+        $GLOBALS['__mjkn_t']['query_ms'] += (microtime(true) - $t0) * 1000;
+        $GLOBALS['__mjkn_t']['queries']++;
+        return $result;
+    }
+
     set_error_handler(function ($severity, $message, $file, $line) {
         if (!(error_reporting() & $severity)) {
             return false; // error di-suppress dengan @ -> abaikan
@@ -161,7 +174,10 @@
                 'code' => 500
             )
         );
+        $t0        = microtime(true);
         $konektor = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+        $GLOBALS['__mjkn_t']['connect_ms'] += (microtime(true) - $t0) * 1000;
+        $GLOBALS['__mjkn_t']['connects']++;
         if (!$konektor) {
             mjknLog('DB', sprintf('Koneksi gagal: %s (host=%s db=%s)', mysqli_connect_error(), DB_HOST, DB_NAME));
             http_response_code(500);
@@ -180,6 +196,27 @@
     }
 
     register_shutdown_function('tutupkoneksi');
+
+    register_shutdown_function(function () {
+        $t = isset($GLOBALS['__mjkn_t']) ? $GLOBALS['__mjkn_t'] : null;
+        if (!$t) {
+            return;
+        }
+        $total = null;
+        if (isset($GLOBALS['request_start'])) {
+            $total = (microtime(true) - $GLOBALS['request_start']) * 1000;
+        } else if (isset($GLOBALS['__mjkn_request_start'])) {
+            $total = (microtime(true) - $GLOBALS['__mjkn_request_start']) * 1000;
+        }
+        mjknLog('TIMING', sprintf(
+            'php_total_ms=%s connect_ms=%.1f connects=%d query_count=%d query_ms=%.1f',
+            $total === null ? '?' : round($total, 1),
+            $t['connect_ms'],
+            $t['connects'],
+            $t['queries'],
+            $t['query_ms']
+        ));
+    });
     
     function cleankar($dirty){
         $konektor=bukakoneksi();
@@ -206,7 +243,7 @@
 
     function bukaquery2($sql){
         $konektor = bukakoneksi();
-        $result = mysqli_query($konektor,$sql);
+        $result = mjknQuery($konektor,$sql);
         if ($result === false) {
             mjknLog('SQL', sprintf('Error: %s | Query: %s', mysqli_error($konektor), mjknMaskSql($sql)));
             if (mjknErrnoKoneksi($konektor)) {
@@ -220,7 +257,7 @@
     
     function bukaquery3($sql){
         $konektor = bukakoneksi();
-        $result = mysqli_query($konektor,$sql);
+        $result = mjknQuery($konektor,$sql);
         if ($result === false) {
             mjknLog('SQL', sprintf('Error: %s | Query: %s', mysqli_error($konektor), mjknMaskSql($sql)));
             if (mjknErrnoKoneksi($konektor)) {
@@ -248,7 +285,7 @@
                 'code' => 201
             )
         );
-        $result = mysqli_query($konektor, $sql);
+        $result = mjknQuery($konektor, $sql);
         if ($result === false) {
             mjknLog('SQL', sprintf('Error: %s | Query: %s', mysqli_error($konektor), mjknMaskSql($sql)));
             if (mjknErrnoKoneksi($konektor)) {
@@ -265,7 +302,7 @@
     
     function bukainput($sql) {
         $konektor = bukakoneksi();
-        $result = mysqli_query($konektor,$sql);
+        $result = mjknQuery($konektor,$sql);
         if ($result === false) {
             mjknLog('SQL', sprintf('Error: %s | Query: %s', mysqli_error($konektor), mjknMaskSql($sql)));
             die("Gagal menjalankan query !");
@@ -349,7 +386,7 @@
                         IFNULL((SELECT MAX(CAST(SUBSTRING_INDEX(no_rawat, '/', -1) AS UNSIGNED)) FROM referensi_mobilejkn_bpjs WHERE tanggalperiksa = '$tglSafe' AND no_rawat LIKE '$prefix%'), 0),
                         IFNULL((SELECT MAX(CAST(SUBSTRING_INDEX(no_rawat, '/', -1) AS UNSIGNED)) FROM reg_periksa WHERE tgl_registrasi = '$tglSafe' AND no_rawat LIKE '$prefix%'), 0)
                      ) + 1 AS nxt";
-        $res      = mysqli_query($konektor, $sql);
+        $res      = mjknQuery($konektor, $sql);
         $nxt      = 1;
         if ($res === false) {
             mjknLog('SQL', sprintf('Error: %s | Query: %s', mysqli_error($konektor), mjknMaskSql($sql)));
@@ -374,7 +411,7 @@
                      FROM referensi_mobilejkn_bpjs 
                      WHERE tanggalperiksa = '$tglSafe' 
                        AND nobooking LIKE '" . mysqli_real_escape_string($konektor, $prefix) . "%'";
-        $res      = mysqli_query($konektor, $sql);
+        $res      = mjknQuery($konektor, $sql);
         $nxt      = 1;
         if ($res === false) {
             mjknLog('SQL', sprintf('Error: %s | Query: %s', mysqli_error($konektor), mjknMaskSql($sql)));
