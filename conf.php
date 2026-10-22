@@ -382,9 +382,17 @@
         // - referensi_mobilejkn_bpjs tidak pernah dihapus barisnya, sehingga nomor bekas
         //   pembatalan tidak dipakai ulang (nomor antrean tetap rapat/tidak loncat).
         // - reg_periksa dipakai agar tidak bentrok dengan pendaftaran lokal/SIMRS.
+        //
+        // Batas penomoran hanya prefix tanggal di DALAM no_rawat, bukan kolom tanggal
+        // (tanggalperiksa / tgl_registrasi). Data SIMRS bisa punya tanggal yang tidak
+        // sama dengan tanggal di no_rawat, mis. registrasi di-ubah tanggalnya di SIMRS
+        // (tgl_registrasi 2026-10-21 tapi no_rawat 2026/10/22/000123) atau no_rawat
+        // dibuat manual. Kalau kolom tanggal ikut difilter, nomor yang sudah terpakai
+        // ikut terlewat, alokasi bentrok dengan PRIMARY KEY no_rawat, INSERT
+        // reg_periksa gagal -> permintaan antrean tidak bisa dilanjutkan.
         $sql      = "SELECT GREATEST(
-                        IFNULL((SELECT MAX(CAST(SUBSTRING_INDEX(no_rawat, '/', -1) AS UNSIGNED)) FROM referensi_mobilejkn_bpjs WHERE tanggalperiksa = '$tglSafe' AND no_rawat LIKE '$prefix%'), 0),
-                        IFNULL((SELECT MAX(CAST(SUBSTRING_INDEX(no_rawat, '/', -1) AS UNSIGNED)) FROM reg_periksa WHERE tgl_registrasi = '$tglSafe' AND no_rawat LIKE '$prefix%'), 0)
+                        IFNULL((SELECT MAX(CAST(SUBSTRING_INDEX(no_rawat, '/', -1) AS UNSIGNED)) FROM referensi_mobilejkn_bpjs WHERE no_rawat LIKE '$prefix%'), 0),
+                        IFNULL((SELECT MAX(CAST(SUBSTRING_INDEX(no_rawat, '/', -1) AS UNSIGNED)) FROM reg_periksa WHERE no_rawat LIKE '$prefix%'), 0)
                      ) + 1 AS nxt";
         $res      = mjknQuery($konektor, $sql);
         $nxt      = 1;
@@ -395,6 +403,17 @@
             if ($nxt < 1) {
                 $nxt = 1;
             }
+        }
+        // Pengaman: lewati nomor yang ternyata sudah dipakai (data lama / format tak
+        // lazim) supaya INSERT ke reg_periksa tidak pernah bentrok PRIMARY KEY.
+        for ($coba = 0; $coba < 20; $coba++) {
+            $kandidat = $prefix . sprintf('%06d', $nxt);
+            $dipakai  = getOne2("select count(1) from reg_periksa where no_rawat='" . mysqli_real_escape_string($konektor, $kandidat) . "'");
+            if (intval($dipakai) < 1) {
+                return sprintf('%06d', $nxt);
+            }
+            mjknLog('ANTREAN', sprintf('no_rawat %s sudah dipakai, dilewati', $kandidat));
+            $nxt++;
         }
         return sprintf('%06d', $nxt);
     }
