@@ -536,12 +536,7 @@ if (!empty($url[0])) {
                                                 } else {
                                                  $tglDaftarParam = validTeks4($decode['tanggalperiksa'], 20);
                                                  $noKartuParam   = validTeks4($decode['nomorkartu'], 20);
-                                                 $cacheSdh       = 'mjkn:sudahdaftar:' . md5($kdpoli . '|' . $kddokter . '|' . $tglDaftarParam . '|' . $noKartuParam);
-                                                 $sudahdaftar    = mjknCacheGet($cacheSdh);
-                                                 if ($sudahdaftar === null) {
-                                                     $sudahdaftar = getOne2("select count(reg_periksa.no_rawat) from reg_periksa inner join pasien on reg_periksa.no_rkm_medis=pasien.no_rkm_medis where reg_periksa.kd_poli='$kdpoli' and reg_periksa.kd_dokter='$kddokter' and reg_periksa.tgl_registrasi='" . $tglDaftarParam . "' and pasien.no_peserta='" . $noKartuParam . "' ");
-                                                     mjknCacheSet($cacheSdh, $sudahdaftar, 5);
-                                                 }
+                                                 $sudahdaftar    = getOne2("select (select count(reg_periksa.no_rawat) from reg_periksa inner join pasien on reg_periksa.no_rkm_medis=pasien.no_rkm_medis where reg_periksa.kd_poli='$kdpoli' and reg_periksa.kd_dokter='$kddokter' and reg_periksa.tgl_registrasi='" . $tglDaftarParam . "' and pasien.no_peserta='" . $noKartuParam . "' and not exists (select 1 from referensi_mobilejkn_bpjs where referensi_mobilejkn_bpjs.no_rawat=reg_periksa.no_rawat and referensi_mobilejkn_bpjs.status='Batal')) + (select count(nobooking) from referensi_mobilejkn_bpjs where nomorkartu='" . $noKartuParam . "' and tanggalperiksa='" . $tglDaftarParam . "' and kodedokter='" . validTeks4($decode['kodedokter'], 20) . "' and kodepoli='" . validTeks4($decode['kodepoli'], 20) . "' and status in ('Belum','Checkin'))");
                                                       if ($sudahdaftar > 0) {
                                                          $response = array(
                                                              'metadata' => array(
