@@ -511,12 +511,12 @@ if (!empty($url[0])) {
                                                 $response = array(
                                                     'metadata' => array(
                                                         'message' =>  'Data pasien ini tidak ditemukan',
-                                                        'code' => 202
-                                                        // 'code' => 201
+                                                        // 'code' => 202
+                                                        'code' => 201
                                                     )
                                                 );
-                                                // http_response_code(201);
-                                                http_response_code(202);
+                                                http_response_code(201);
+                                                // http_response_code(202);
                                             } else {
                                                 /*if(empty($decode['norm'])) { 
                                                         $response = array(
