@@ -676,8 +676,11 @@
     function cekpasien($nik,$nopeserta){
         $cacheKey = 'mjkn:pasien:' . md5((string)$nik . '|' . (string)$nopeserta);
         $cached   = mjknCacheGet($cacheKey);
-        if ($cached !== null) {
+        if (!empty($cached)) {
             return $cached;
+        }
+        if ($cached !== null) {
+            mjknCacheDelete($cacheKey);
         }
         $data=array();
         $hasil = bukaquery2("SELECT pasien.no_rkm_medis, pasien.no_ktp, pasien.no_peserta,namakeluarga,alamatpj,kelurahanpj,tgl_daftar,kecamatanpj,kabupatenpj,propinsipj,keluarga,TIMESTAMPDIFF(YEAR, pasien.tgl_lahir, CURDATE()) as tahun,(TIMESTAMPDIFF(MONTH, pasien.tgl_lahir, CURDATE()) - ((TIMESTAMPDIFF(MONTH, pasien.tgl_lahir, CURDATE()) div 12) * 12)) as bulan,
@@ -688,7 +691,9 @@
                 $data = $row;
             }
         }
-        mjknCacheSet($cacheKey, $data, 600);
+        if (!empty($data)) {
+            mjknCacheSet($cacheKey, $data, 600);
+        }
         return $data;
     }
     

@@ -511,12 +511,12 @@ if (!empty($url[0])) {
                                                 $response = array(
                                                     'metadata' => array(
                                                         'message' =>  'Data pasien ini tidak ditemukan',
-                                                        // 'code' => 202
-                                                        'code' => 201
+                                                        'code' => 202
+                                                        // 'code' => 201
                                                     )
                                                 );
-                                                http_response_code(201);
-                                                // http_response_code(202);
+                                                // http_response_code(201);
+                                                http_response_code(202);
                                             } else {
                                                 /*if(empty($decode['norm'])) { 
                                                         $response = array(
@@ -1706,6 +1706,7 @@ if (!empty($url[0])) {
 
                                         $query = bukaquery2("insert into pasien values('$norm','" . validTeks4($decode['nama'], 60) . "','" . validTeks4($decode['nik'], 20) . "','" . validTeks4($decode['jeniskelamin'], 20) . "','-','" . validTeks4($decode['tanggallahir'], 20) . "','-','" . validTeks4($decode['alamat'], 100) . "','-','-','JOMBLO','-',current_date(),'" . validTeks4($decode['nohp'], 20) . "','0','-','SAUDARA','-','" . CARABAYAR . "','" . validTeks4($decode['nomorkartu'], 20) . "','" . getOne2("select kelurahan.kd_kel from kelurahan where kelurahan.nm_kel='" . validTeks4($decode['namakel'], 30) . "'") . "','" . getOne2("select kecamatan.kd_kec from kecamatan where kecamatan.nm_kec='" . validTeks4($decode['namakec'], 30) . "'") . "','" . getOne2("select kabupaten.kd_kab from kabupaten where kabupaten.nm_kab='" . validTeks4($decode['namadati2'], 30) . "'") . "','-','" . validTeks4($decode['alamat'], 100) . "','" . validTeks4($decode['namakel'], 30) . "','" . validTeks4($decode['namakec'], 30) . "','" . validTeks4($decode['namadati2'], 30) . "','-','1','1','1','-','-','" . getOne2("select propinsi.kd_prop from propinsi where propinsi.nm_prop='" . validTeks4($decode['namaprop'], 30) . "'") . "','" . validTeks4($decode['namaprop'], 30) . "')");
                                         if ($query) {
+                                            mjknCacheDelete('mjkn:pasien:' . md5((string)$decode['nik'] . '|' . (string)$decode['nomorkartu']));
                                             $response = array(
                                                 'response' => array(
                                                     'norm' => $norm
