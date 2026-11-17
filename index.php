@@ -486,9 +486,14 @@ if (!empty($url[0])) {
                                         );
                                         http_response_code(201);
                                     } else {
+                                        // tanpa jam 
                                         $jadwal = fetch_array(bukaquery2("select jadwal.kd_dokter,dokter.nm_dokter,jadwal.hari_kerja,jadwal.jam_mulai,jadwal.jam_selesai,jadwal.kd_poli,poliklinik.nm_poli,jadwal.kuota 
                                                             from jadwal inner join poliklinik ON poliklinik.kd_poli=jadwal.kd_poli inner join dokter ON jadwal.kd_dokter=dokter.kd_dokter 
-                                                            where jadwal.hari_kerja='$hari' and jadwal.kd_dokter='$kddokter' and jadwal.kd_poli='$kdpoli' and jadwal.jam_mulai='$jammulai:00' and jadwal.jam_selesai='$jamselesai:00'"));
+                                                            where jadwal.hari_kerja='$hari' and jadwal.kd_dokter='$kddokter' and jadwal.kd_poli='$kdpoli'"));
+                                        // dengan jam
+                                        // $jadwal = fetch_array(bukaquery2("select jadwal.kd_dokter,dokter.nm_dokter,jadwal.hari_kerja,jadwal.jam_mulai,jadwal.jam_selesai,jadwal.kd_poli,poliklinik.nm_poli,jadwal.kuota 
+                                        //                     from jadwal inner join poliklinik ON poliklinik.kd_poli=jadwal.kd_poli inner join dokter ON jadwal.kd_dokter=dokter.kd_dokter 
+                                        //                     where jadwal.hari_kerja='$hari' and jadwal.kd_dokter='$kddokter' and jadwal.kd_poli='$kdpoli' and jadwal.jam_mulai='$jammulai:00' and jadwal.jam_selesai='$jamselesai:00'"));
                                         if (!isset($jadwal['kuota'])) {
                                             $response = array(
                                                 'metadata' => array(
